@@ -163,7 +163,7 @@ function Library:CreateLib(name, theme)
 
     -- === Settings Menu ===
     local settingsFrame = Instance.new("Frame")
-    settingsFrame.Size = UDim2.new(0, 260, 0, 230)
+    settingsFrame.Size = UDim2.new(0, 260, 0, 270)
     settingsFrame.Position = UDim2.new(1, -270, 0, 35)
     settingsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     settingsFrame.BorderSizePixel = 1
@@ -182,16 +182,13 @@ function Library:CreateLib(name, theme)
         end
         for _, obj in pairs(mainFrame:GetDescendants()) do
             if obj:IsA("Frame") and obj.BorderSizePixel > 0 then
-                if obj.Name:find("Frame") or obj.Name:find("Button") or obj.Name:find("slider") or obj.Name:find("toggle") then
-                    if obj.BorderColor3 ~= Color3.fromRGB(50,50,50) and obj.BorderColor3 ~= Color3.fromRGB(60,60,60) then
-                        obj.BorderColor3 = CurrentColor
-                    end
-                end
+                obj.BorderColor3 = CurrentColor
             end
-            if obj:IsA("Frame") and (obj.Name == "sliderFill" or obj.Name == "toggleIndicator") then
-                if obj.BackgroundColor3 ~= Color3.fromRGB(100,100,100) then
-                    obj.BackgroundColor3 = CurrentColor
-                end
+            if obj.Name == "sliderFill" or obj.Name == "toggleIndicator" then
+                obj.BackgroundColor3 = CurrentColor
+            end
+            if (obj.Name == "valueLabel" or obj.Name == "nameLabel") and obj.TextColor3 == Color3.fromRGB(255,255,255) or obj.TextColor3 == Color3.fromRGB(230,230,230) then
+                obj.TextColor3 = CurrentColor
             end
         end
     end
@@ -225,12 +222,13 @@ function Library:CreateLib(name, theme)
     end
 
     createColorButton("Black & White", Color3.fromRGB(255, 255, 255)).Position = UDim2.new(0, 10, 0, 40)
-    createColorButton("Orange & Black", Color3.fromRGB(255, 140, 0)).Position = UDim2.new(0, 10, 0, 77)
-    createColorButton("Purple & Black", Color3.fromRGB(180, 0, 255)).Position = UDim2.new(0, 10, 0, 114)
+    createColorButton("Black & Gray", Color3.fromRGB(180, 180, 180)).Position = UDim2.new(0, 10, 0, 77)
+    createColorButton("Orange & Black", Color3.fromRGB(255, 140, 0)).Position = UDim2.new(0, 10, 0, 114)
+    createColorButton("Purple & Black", Color3.fromRGB(180, 0, 255)).Position = UDim2.new(0, 10, 0, 151)
 
     local transTitle = Instance.new("TextLabel")
     transTitle.Size = UDim2.new(1, -20, 0, 20)
-    transTitle.Position = UDim2.new(0, 10, 0, 155)
+    transTitle.Position = UDim2.new(0, 10, 0, 195)
     transTitle.BackgroundTransparency = 1
     transTitle.Text = "Menu Transparency:"
     transTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -240,7 +238,7 @@ function Library:CreateLib(name, theme)
 
     local transBg = Instance.new("Frame")
     transBg.Size = UDim2.new(1, -70, 0, 8)
-    transBg.Position = UDim2.new(0, 10, 0, 180)
+    transBg.Position = UDim2.new(0, 10, 0, 220)
     transBg.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     transBg.Parent = settingsFrame
 
@@ -251,19 +249,18 @@ function Library:CreateLib(name, theme)
 
     local transBox = Instance.new("TextBox")
     transBox.Size = UDim2.new(0, 50, 0, 20)
-    transBox.Position = UDim2.new(1, -60, 0, 155)
+    transBox.Position = UDim2.new(1, -60, 0, 195)
     transBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    transBox.BorderColor3 = CurrentColor
     transBox.Text = "1.00"
-    transBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    transBox.TextColor3 = CurrentColor
     transBox.TextSize = 13
     transBox.Font = Enum.Font.Code
     transBox.Parent = settingsFrame
 
     local draggingTrans = false
     transBg.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            draggingTrans = true
-        end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then draggingTrans = true end
     end)
 
     UserInputService.InputChanged:Connect(function(input)
@@ -276,9 +273,7 @@ function Library:CreateLib(name, theme)
     end)
 
     UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            draggingTrans = false
-        end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then draggingTrans = false end
     end)
 
     transBox.FocusLost:Connect(function()
@@ -522,8 +517,8 @@ function Library:CreateLib(name, theme)
             sectionTitle.Parent = container
 
             local sectionLine = Instance.new("Frame")
-            sectionLine.Size = UDim2.new(1, 0, 0, 2)
-            sectionLine.Position = UDim2.new(0, 0, 0, yPos + 25)
+            sectionLine.Size = UDim2.new(1, 0, 0, 1)
+            sectionLine.Position = UDim2.new(0, 0, 0, yPos + 28)
             sectionLine.BackgroundColor3 = CurrentColor
             sectionLine.BorderSizePixel = 0
             sectionLine.Parent = container
@@ -557,7 +552,7 @@ function Library:CreateLib(name, theme)
                 buttonFrame.Size = UDim2.new(1, 0, 0, 60)
                 buttonFrame.Position = UDim2.new(0, 0, 0, currentY)
                 buttonFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-                buttonFrame.BorderSizePixel = 2
+                buttonFrame.BorderSizePixel = 1
                 buttonFrame.BorderColor3 = CurrentColor
                 buttonFrame.Parent = container
 
@@ -619,7 +614,7 @@ function Library:CreateLib(name, theme)
                 toggleFrame.Size = UDim2.new(1, 0, 0, 50)
                 toggleFrame.Position = UDim2.new(0, 0, 0, currentY)
                 toggleFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-                toggleFrame.BorderSizePixel = 2
+                toggleFrame.BorderSizePixel = 1
                 toggleFrame.BorderColor3 = CurrentColor
                 toggleFrame.Parent = container
 
@@ -649,7 +644,7 @@ function Library:CreateLib(name, theme)
                 toggleBg.Size = UDim2.new(0, 50, 0, 24)
                 toggleBg.Position = UDim2.new(1, -60, 0.5, -12)
                 toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-                toggleBg.BorderSizePixel = 2
+                toggleBg.BorderSizePixel = 1
                 toggleBg.BorderColor3 = CurrentColor
                 toggleBg.Parent = toggleFrame
 
@@ -710,7 +705,7 @@ function Library:CreateLib(name, theme)
                 sliderFrame.Size = UDim2.new(1, 0, 0, 70)
                 sliderFrame.Position = UDim2.new(0, 0, 0, currentY)
                 sliderFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-                sliderFrame.BorderSizePixel = 2
+                sliderFrame.BorderSizePixel = 1
                 sliderFrame.BorderColor3 = CurrentColor
                 sliderFrame.Parent = container
 
@@ -841,7 +836,7 @@ function Library:CreateLib(name, theme)
                 dropdownFrame.Size = UDim2.new(1, 0, 0, 50)
                 dropdownFrame.Position = UDim2.new(0, 0, 0, currentY)
                 dropdownFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-                dropdownFrame.BorderSizePixel = 2
+                dropdownFrame.BorderSizePixel = 1
                 dropdownFrame.BorderColor3 = CurrentColor
                 dropdownFrame.Parent = container
                 dropdownFrame.ClipsDescendants = true
@@ -1009,7 +1004,7 @@ function Library:CreateLib(name, theme)
                     toggleBg.Size = UDim2.new(0, 50, 0, 24)
                     toggleBg.Position = UDim2.new(1, -60, 0.5, -12)
                     toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-                    toggleBg.BorderSizePixel = 2
+                    toggleBg.BorderSizePixel = 1
                     toggleBg.BorderColor3 = CurrentColor
                     toggleBg.Parent = toggleFrame
 
@@ -1203,7 +1198,7 @@ function Library:CreateLib(name, theme)
                 textFrame.Size = UDim2.new(1, 0, 0, height)
                 textFrame.Position = UDim2.new(0, 0, 0, currentY)
                 textFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-                textFrame.BorderSizePixel = 2
+                textFrame.BorderSizePixel = 1
                 textFrame.BorderColor3 = CurrentColor
                 textFrame.Parent = container
 
@@ -1231,7 +1226,7 @@ function Library:CreateLib(name, theme)
                 inputFrame.Size = UDim2.new(1, 0, 0, 85)
                 inputFrame.Position = UDim2.new(0, 0, 0, currentY)
                 inputFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-                inputFrame.BorderSizePixel = 2
+                inputFrame.BorderSizePixel = 1
                 inputFrame.BorderColor3 = CurrentColor
                 inputFrame.Parent = container
 
@@ -1301,7 +1296,7 @@ function Library:CreateLib(name, theme)
                 inputToggleFrame.Size = UDim2.new(1, 0, 0, 85)
                 inputToggleFrame.Position = UDim2.new(0, 0, 0, currentY)
                 inputToggleFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-                inputToggleFrame.BorderSizePixel = 2
+                inputToggleFrame.BorderSizePixel = 1
                 inputToggleFrame.BorderColor3 = CurrentColor
                 inputToggleFrame.Parent = container
 
@@ -1331,7 +1326,7 @@ function Library:CreateLib(name, theme)
                 toggleBg.Size = UDim2.new(0, 50, 0, 24)
                 toggleBg.Position = UDim2.new(1, -60, 0, 6)
                 toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-                toggleBg.BorderSizePixel = 2
+                toggleBg.BorderSizePixel = 1
                 toggleBg.BorderColor3 = CurrentColor
                 toggleBg.Parent = inputToggleFrame
 
@@ -1412,7 +1407,7 @@ function Library:CreateLib(name, theme)
                 chatFrame.Size = UDim2.new(1, 0, 0, 300)
                 chatFrame.Position = UDim2.new(0, 0, 0, currentY)
                 chatFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-                chatFrame.BorderSizePixel = 2
+                chatFrame.BorderSizePixel = 1
                 chatFrame.BorderColor3 = CurrentColor
                 chatFrame.Parent = container
 

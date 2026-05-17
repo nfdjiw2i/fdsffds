@@ -112,7 +112,7 @@ function Library:CreateLib(name, theme)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
-    -- Кнопка настроек (серый квадрат как остальные кнопки)
+    -- Кнопка настроек (серый квадрат)
     local settingsBtn = Instance.new("TextButton")
     settingsBtn.Size = UDim2.new(0, 26, 0, 26)
     settingsBtn.Position = UDim2.new(1, -112, 0, 2)
@@ -161,7 +161,7 @@ function Library:CreateLib(name, theme)
     closeButton.Font = Enum.Font.Code
     closeButton.Parent = topBar
 
-    -- === Settings Panel ===
+    -- === Settings Menu ===
     local settingsFrame = Instance.new("Frame")
     settingsFrame.Size = UDim2.new(0, 260, 0, 230)
     settingsFrame.Position = UDim2.new(1, -270, 0, 35)
@@ -176,9 +176,23 @@ function Library:CreateLib(name, theme)
     sfCorner.CornerRadius = UDim.new(0, 6)
     sfCorner.Parent = settingsFrame
 
-    local function updateMenuColors()
+    local function updateAllAccentColors()
         if UIElements.ActiveLine then
             UIElements.ActiveLine.BackgroundColor3 = CurrentColor
+        end
+        for _, obj in pairs(mainFrame:GetDescendants()) do
+            if obj:IsA("Frame") and obj.BorderSizePixel > 0 then
+                if obj.Name:find("Frame") or obj.Name:find("Button") or obj.Name:find("slider") or obj.Name:find("toggle") then
+                    if obj.BorderColor3 ~= Color3.fromRGB(50,50,50) and obj.BorderColor3 ~= Color3.fromRGB(60,60,60) then
+                        obj.BorderColor3 = CurrentColor
+                    end
+                end
+            end
+            if obj:IsA("Frame") and (obj.Name == "sliderFill" or obj.Name == "toggleIndicator") then
+                if obj.BackgroundColor3 ~= Color3.fromRGB(100,100,100) then
+                    obj.BackgroundColor3 = CurrentColor
+                end
+            end
         end
     end
 
@@ -204,7 +218,7 @@ function Library:CreateLib(name, theme)
 
         btn.MouseButton1Click:Connect(function()
             CurrentColor = color
-            updateMenuColors()
+            updateAllAccentColors()
             settingsFrame.Visible = false
         end)
         return btn
@@ -246,7 +260,6 @@ function Library:CreateLib(name, theme)
     transBox.Parent = settingsFrame
 
     local draggingTrans = false
-
     transBg.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             draggingTrans = true
@@ -511,7 +524,7 @@ function Library:CreateLib(name, theme)
             local sectionLine = Instance.new("Frame")
             sectionLine.Size = UDim2.new(1, 0, 0, 2)
             sectionLine.Position = UDim2.new(0, 0, 0, yPos + 25)
-            sectionLine.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+            sectionLine.BackgroundColor3 = CurrentColor
             sectionLine.BorderSizePixel = 0
             sectionLine.Parent = container
 
@@ -545,7 +558,7 @@ function Library:CreateLib(name, theme)
                 buttonFrame.Position = UDim2.new(0, 0, 0, currentY)
                 buttonFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
                 buttonFrame.BorderSizePixel = 2
-                buttonFrame.BorderColor3 = Color3.fromRGB(50, 50, 50)
+                buttonFrame.BorderColor3 = CurrentColor
                 buttonFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -607,7 +620,7 @@ function Library:CreateLib(name, theme)
                 toggleFrame.Position = UDim2.new(0, 0, 0, currentY)
                 toggleFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
                 toggleFrame.BorderSizePixel = 2
-                toggleFrame.BorderColor3 = Color3.fromRGB(50, 50, 50)
+                toggleFrame.BorderColor3 = CurrentColor
                 toggleFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -637,7 +650,7 @@ function Library:CreateLib(name, theme)
                 toggleBg.Position = UDim2.new(1, -60, 0.5, -12)
                 toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 toggleBg.BorderSizePixel = 2
-                toggleBg.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                toggleBg.BorderColor3 = CurrentColor
                 toggleBg.Parent = toggleFrame
 
                 local toggleIndicator = Instance.new("Frame")
@@ -645,7 +658,7 @@ function Library:CreateLib(name, theme)
                 toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                 toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
                 toggleIndicator.BorderSizePixel = 1
-                toggleIndicator.BorderColor3 = Color3.fromRGB(140, 140, 140)
+                toggleIndicator.BorderColor3 = CurrentColor
                 toggleIndicator.Parent = toggleBg
 
                 local toggleState = false
@@ -698,7 +711,7 @@ function Library:CreateLib(name, theme)
                 sliderFrame.Position = UDim2.new(0, 0, 0, currentY)
                 sliderFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
                 sliderFrame.BorderSizePixel = 2
-                sliderFrame.BorderColor3 = Color3.fromRGB(50, 50, 50)
+                sliderFrame.BorderColor3 = CurrentColor
                 sliderFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -728,7 +741,7 @@ function Library:CreateLib(name, theme)
                 valueLabel.Position = UDim2.new(1, -60, 0, 28)
                 valueLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
                 valueLabel.BorderSizePixel = 1
-                valueLabel.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                valueLabel.BorderColor3 = CurrentColor
                 valueLabel.Text = tostring(default or min)
                 valueLabel.TextColor3 = CurrentColor
                 valueLabel.TextSize = 12
@@ -740,7 +753,7 @@ function Library:CreateLib(name, theme)
                 sliderBg.Position = UDim2.new(0, 10, 0, 50)
                 sliderBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 sliderBg.BorderSizePixel = 1
-                sliderBg.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                sliderBg.BorderColor3 = CurrentColor
                 sliderBg.Parent = sliderFrame
 
                 local sliderFill = Instance.new("Frame")
@@ -829,7 +842,7 @@ function Library:CreateLib(name, theme)
                 dropdownFrame.Position = UDim2.new(0, 0, 0, currentY)
                 dropdownFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
                 dropdownFrame.BorderSizePixel = 2
-                dropdownFrame.BorderColor3 = Color3.fromRGB(50, 50, 50)
+                dropdownFrame.BorderColor3 = CurrentColor
                 dropdownFrame.Parent = container
                 dropdownFrame.ClipsDescendants = true
 
@@ -912,7 +925,7 @@ function Library:CreateLib(name, theme)
                     buttonFrame.Position = UDim2.new(0, 10, 0, btnY)
                     buttonFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
                     buttonFrame.BorderSizePixel = 1
-                    buttonFrame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+                    buttonFrame.BorderColor3 = CurrentColor
                     buttonFrame.Parent = dropdownRef.content
 
                     local nameLabel = Instance.new("TextLabel")
@@ -967,7 +980,7 @@ function Library:CreateLib(name, theme)
                     toggleFrame.Position = UDim2.new(0, 10, 0, btnY)
                     toggleFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
                     toggleFrame.BorderSizePixel = 1
-                    toggleFrame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+                    toggleFrame.BorderColor3 = CurrentColor
                     toggleFrame.Parent = dropdownRef.content
 
                     local nameLabel = Instance.new("TextLabel")
@@ -997,7 +1010,7 @@ function Library:CreateLib(name, theme)
                     toggleBg.Position = UDim2.new(1, -60, 0.5, -12)
                     toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                     toggleBg.BorderSizePixel = 2
-                    toggleBg.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                    toggleBg.BorderColor3 = CurrentColor
                     toggleBg.Parent = toggleFrame
 
                     local toggleIndicator = Instance.new("Frame")
@@ -1005,7 +1018,7 @@ function Library:CreateLib(name, theme)
                     toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                     toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
                     toggleIndicator.BorderSizePixel = 1
-                    toggleIndicator.BorderColor3 = Color3.fromRGB(140, 140, 140)
+                    toggleIndicator.BorderColor3 = CurrentColor
                     toggleIndicator.Parent = toggleBg
 
                     local toggleState = false
@@ -1058,7 +1071,7 @@ function Library:CreateLib(name, theme)
                     sliderFrame.Position = UDim2.new(0, 10, 0, btnY)
                     sliderFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
                     sliderFrame.BorderSizePixel = 1
-                    sliderFrame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+                    sliderFrame.BorderColor3 = CurrentColor
                     sliderFrame.Parent = dropdownRef.content
 
                     local nameLabel = Instance.new("TextLabel")
@@ -1088,7 +1101,7 @@ function Library:CreateLib(name, theme)
                     valueLabel.Position = UDim2.new(1, -60, 0, 28)
                     valueLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
                     valueLabel.BorderSizePixel = 1
-                    valueLabel.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                    valueLabel.BorderColor3 = CurrentColor
                     valueLabel.Text = tostring(default or min)
                     valueLabel.TextColor3 = CurrentColor
                     valueLabel.TextSize = 12
@@ -1100,7 +1113,7 @@ function Library:CreateLib(name, theme)
                     sliderBg.Position = UDim2.new(0, 10, 0, 50)
                     sliderBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                     sliderBg.BorderSizePixel = 1
-                    sliderBg.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                    sliderBg.BorderColor3 = CurrentColor
                     sliderBg.Parent = sliderFrame
 
                     local sliderFill = Instance.new("Frame")
@@ -1191,7 +1204,7 @@ function Library:CreateLib(name, theme)
                 textFrame.Position = UDim2.new(0, 0, 0, currentY)
                 textFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
                 textFrame.BorderSizePixel = 2
-                textFrame.BorderColor3 = Color3.fromRGB(50, 50, 50)
+                textFrame.BorderColor3 = CurrentColor
                 textFrame.Parent = container
 
                 local textLabel = Instance.new("TextLabel")
@@ -1219,7 +1232,7 @@ function Library:CreateLib(name, theme)
                 inputFrame.Position = UDim2.new(0, 0, 0, currentY)
                 inputFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
                 inputFrame.BorderSizePixel = 2
-                inputFrame.BorderColor3 = Color3.fromRGB(50, 50, 50)
+                inputFrame.BorderColor3 = CurrentColor
                 inputFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -1250,7 +1263,7 @@ function Library:CreateLib(name, theme)
                 textBox.Position = UDim2.new(0, 10, 0, 48)
                 textBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 textBox.BorderSizePixel = 1
-                textBox.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                textBox.BorderColor3 = CurrentColor
                 textBox.Text = ""
                 textBox.PlaceholderText = "Enter text..."
                 textBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
@@ -1289,7 +1302,7 @@ function Library:CreateLib(name, theme)
                 inputToggleFrame.Position = UDim2.new(0, 0, 0, currentY)
                 inputToggleFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
                 inputToggleFrame.BorderSizePixel = 2
-                inputToggleFrame.BorderColor3 = Color3.fromRGB(50, 50, 50)
+                inputToggleFrame.BorderColor3 = CurrentColor
                 inputToggleFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -1319,7 +1332,7 @@ function Library:CreateLib(name, theme)
                 toggleBg.Position = UDim2.new(1, -60, 0, 6)
                 toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 toggleBg.BorderSizePixel = 2
-                toggleBg.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                toggleBg.BorderColor3 = CurrentColor
                 toggleBg.Parent = inputToggleFrame
 
                 local toggleIndicator = Instance.new("Frame")
@@ -1327,7 +1340,7 @@ function Library:CreateLib(name, theme)
                 toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                 toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
                 toggleIndicator.BorderSizePixel = 1
-                toggleIndicator.BorderColor3 = Color3.fromRGB(140, 140, 140)
+                toggleIndicator.BorderColor3 = CurrentColor
                 toggleIndicator.Parent = toggleBg
 
                 local textBox = Instance.new("TextBox")
@@ -1335,7 +1348,7 @@ function Library:CreateLib(name, theme)
                 textBox.Position = UDim2.new(0, 10, 0, 48)
                 textBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 textBox.BorderSizePixel = 1
-                textBox.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                textBox.BorderColor3 = CurrentColor
                 textBox.Text = ""
                 textBox.PlaceholderText = "Enter text..."
                 textBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
@@ -1400,7 +1413,7 @@ function Library:CreateLib(name, theme)
                 chatFrame.Position = UDim2.new(0, 0, 0, currentY)
                 chatFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
                 chatFrame.BorderSizePixel = 2
-                chatFrame.BorderColor3 = Color3.fromRGB(50, 50, 50)
+                chatFrame.BorderColor3 = CurrentColor
                 chatFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -1430,7 +1443,7 @@ function Library:CreateLib(name, theme)
                 messagesFrame.Position = UDim2.new(0, 10, 0, 48)
                 messagesFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
                 messagesFrame.BorderSizePixel = 1
-                messagesFrame.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                messagesFrame.BorderColor3 = CurrentColor
                 messagesFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
                 messagesFrame.ScrollBarThickness = 6
                 messagesFrame.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80)
@@ -1454,7 +1467,7 @@ function Library:CreateLib(name, theme)
                 nickBox.Position = UDim2.new(0, 10, 0, 225)
                 nickBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 nickBox.BorderSizePixel = 1
-                nickBox.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                nickBox.BorderColor3 = CurrentColor
                 nickBox.Text = ""
                 nickBox.PlaceholderText = "Nickname"
                 nickBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
@@ -1470,7 +1483,7 @@ function Library:CreateLib(name, theme)
                 messageBox.Position = UDim2.new(0.25, 15, 0, 225)
                 messageBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 messageBox.BorderSizePixel = 1
-                messageBox.BorderColor3 = Color3.fromRGB(80, 80, 80)
+                messageBox.BorderColor3 = CurrentColor
                 messageBox.Text = ""
                 messageBox.PlaceholderText = "Message"
                 messageBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)

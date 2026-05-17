@@ -17,7 +17,6 @@ local Sections = {}
 local Tabs = {}
 local TabButtons = {}
 
--- Изменено на белый акцент
 local CurrentColor = Color3.fromRGB(255, 255, 255)
 local CurrentTab = nil
 local TabCounter = 0
@@ -113,16 +112,17 @@ function Library:CreateLib(name, theme)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
-    -- Добавлен белый христианский крест по центру сверху
+    -- Белый христианский крест (без фона)
     local crossLabel = Instance.new("TextLabel")
     crossLabel.Name = "Cross"
-    crossLabel.Size = UDim2.new(0, 30, 0, 30)
-    crossLabel.Position = UDim2.new(0.5, -15, 0, 0)
+    crossLabel.Size = UDim2.new(0, 28, 0, 28)
+    crossLabel.Position = UDim2.new(0.5, -14, 0, 1)
     crossLabel.BackgroundTransparency = 1
     crossLabel.Text = "✝"
     crossLabel.TextColor3 = CurrentColor
-    crossLabel.TextSize = 22
+    crossLabel.TextSize = 24
     crossLabel.Font = Enum.Font.Code
+    crossLabel.ZIndex = 10
     crossLabel.Parent = topBar
 
     local minimizeBtn = Instance.new("TextButton")
@@ -695,9 +695,6 @@ function Library:CreateLib(name, theme)
                 tabData.YPosition = currentY + 80
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
             end
-
-            -- Все остальные функции (NewDropdown, NewTextBlock, NewTextInput, NewInputToggle, NewChat и т.д.) оставлены полностью без изменений
-            -- Только CurrentColor теперь белый
 
             function SectionObject:NewDropdown(dropdownName, description)
                 local currentY = tabData.YPosition

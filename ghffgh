@@ -102,7 +102,7 @@ function Library:CreateLib(name, theme)
     topBar.Parent = mainFrame
 
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -90, 1, 0)
+    titleLabel.Size = UDim2.new(1, -130, 1, 0)
     titleLabel.Position = UDim2.new(0, 10, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = name
@@ -112,18 +112,18 @@ function Library:CreateLib(name, theme)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
-    -- Белый христианский крест (без фона)
-    local crossLabel = Instance.new("TextLabel")
-    crossLabel.Name = "Cross"
-    crossLabel.Size = UDim2.new(0, 28, 0, 28)
-    crossLabel.Position = UDim2.new(0.5, -14, 0, 1)
-    crossLabel.BackgroundTransparency = 1
-    crossLabel.Text = "✝"
-    crossLabel.TextColor3 = CurrentColor
-    crossLabel.TextSize = 24
-    crossLabel.Font = Enum.Font.Code
-    crossLabel.ZIndex = 10
-    crossLabel.Parent = topBar
+    -- Белый круг для настроек
+    local settingsBtn = Instance.new("TextButton")
+    settingsBtn.Size = UDim2.new(0, 26, 0, 26)
+    settingsBtn.Position = UDim2.new(1, -112, 0, 2)
+    settingsBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    settingsBtn.BorderSizePixel = 0
+    settingsBtn.Text = ""
+    settingsBtn.Parent = topBar
+
+    local settingsCorner = Instance.new("UICorner")
+    settingsCorner.CornerRadius = UDim.new(1, 0)
+    settingsCorner.Parent = settingsBtn
 
     local minimizeBtn = Instance.new("TextButton")
     minimizeBtn.Size = UDim2.new(0, 26, 0, 26)
@@ -160,6 +160,127 @@ function Library:CreateLib(name, theme)
     closeButton.TextSize = 14
     closeButton.Font = Enum.Font.Code
     closeButton.Parent = topBar
+
+    -- === Настройки (цвет + прозрачность) ===
+    local settingsFrame = Instance.new("Frame")
+    settingsFrame.Name = "SettingsFrame"
+    settingsFrame.Size = UDim2.new(0, 250, 0, 210)
+    settingsFrame.Position = UDim2.new(1, -260, 0, 35)
+    settingsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    settingsFrame.BorderSizePixel = 1
+    settingsFrame.BorderColor3 = Color3.fromRGB(70, 70, 70)
+    settingsFrame.Visible = false
+    settingsFrame.ZIndex = 200
+    settingsFrame.Parent = mainFrame
+
+    local sfCorner = Instance.new("UICorner")
+    sfCorner.CornerRadius = UDim.new(0, 6)
+    sfCorner.Parent = settingsFrame
+
+    local colorTitle = Instance.new("TextLabel")
+    colorTitle.Size = UDim2.new(1, -20, 0, 25)
+    colorTitle.Position = UDim2.new(0, 10, 0, 10)
+    colorTitle.BackgroundTransparency = 1
+    colorTitle.Text = "Цвет меню:"
+    colorTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    colorTitle.TextSize = 14
+    colorTitle.Font = Enum.Font.Code
+    colorTitle.Parent = settingsFrame
+
+    local function createColorOption(text, color)
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, -20, 0, 30)
+        btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        btn.Text = text
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.TextSize = 14
+        btn.Font = Enum.Font.Code
+        btn.Parent = settingsFrame
+        btn.Position = UDim2.new(0, 10, 0, 0) -- будет настроено ниже
+
+        btn.MouseButton1Click:Connect(function()
+            CurrentColor = color
+            settingsFrame.Visible = false
+        end)
+        return btn
+    end
+
+    local btn1 = createColorOption("Черно-белый", Color3.fromRGB(255, 255, 255))
+    local btn2 = createColorOption("Оранжево-черный", Color3.fromRGB(255, 140, 0))
+    local btn3 = createColorOption("Фиолетово-черный", Color3.fromRGB(180, 0, 255))
+
+    btn1.Position = UDim2.new(0, 10, 0, 40)
+    btn2.Position = UDim2.new(0, 10, 0, 75)
+    btn3.Position = UDim2.new(0, 10, 0, 110)
+
+    local transLabel = Instance.new("TextLabel")
+    transLabel.Size = UDim2.new(1, -20, 0, 20)
+    transLabel.Position = UDim2.new(0, 10, 0, 150)
+    transLabel.BackgroundTransparency = 1
+    transLabel.Text = "Прозрачность меню:"
+    transLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    transLabel.TextSize = 13
+    transLabel.Font = Enum.Font.Code
+    transLabel.TextXAlignment = Enum.TextXAlignment.Left
+    transLabel.Parent = settingsFrame
+
+    local transBg = Instance.new("Frame")
+    transBg.Size = UDim2.new(1, -70, 0, 8)
+    transBg.Position = UDim2.new(0, 10, 0, 175)
+    transBg.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    transBg.Parent = settingsFrame
+
+    local transFill = Instance.new("Frame")
+    transFill.Size = UDim2.new(1, 0, 1, 0)
+    transFill.BackgroundColor3 = CurrentColor
+    transFill.Parent = transBg
+
+    local transBox = Instance.new("TextBox")
+    transBox.Size = UDim2.new(0, 50, 0, 20)
+    transBox.Position = UDim2.new(1, -60, 0, 150)
+    transBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    transBox.Text = "1.00"
+    transBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    transBox.TextSize = 13
+    transBox.Font = Enum.Font.Code
+    transBox.Parent = settingsFrame
+
+    local isDraggingTrans = false
+
+    transBg.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            isDraggingTrans = true
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if isDraggingTrans and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local percent = math.clamp((input.Position.X - transBg.AbsolutePosition.X) / transBg.AbsoluteSize.X, 0, 1)
+            transFill.Size = UDim2.new(percent, 0, 1, 0)
+            transBox.Text = string.format("%.2f", percent)
+            mainFrame.BackgroundTransparency = percent
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            isDraggingTrans = false
+        end
+    end)
+
+    transBox.FocusLost:Connect(function()
+        local num = tonumber(transBox.Text)
+        if num then
+            num = math.clamp(num, 0, 1)
+            transBox.Text = string.format("%.2f", num)
+            transFill.Size = UDim2.new(num, 0, 1, 0)
+            mainFrame.BackgroundTransparency = num
+        end
+    end)
+
+    settingsBtn.MouseButton1Click:Connect(function()
+        settingsFrame.Visible = not settingsFrame.Visible
+    end)
 
     minimizeBtn.MouseButton1Click:Connect(function()
         isMinimized = true

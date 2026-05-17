@@ -17,7 +17,7 @@ local Sections = {}
 local Tabs = {}
 local TabButtons = {}
 
-local CurrentColor = Color3.fromRGB(255, 255, 255)
+local CurrentColor = Color3.fromRGB(255, 255, 255) -- По умолчанию черно-белый
 local CurrentTab = nil
 local TabCounter = 0
 
@@ -112,18 +112,18 @@ function Library:CreateLib(name, theme)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
-    -- Белый круг для настроек
+    -- Кнопка настроек (серый квадрат как остальные кнопки)
     local settingsBtn = Instance.new("TextButton")
     settingsBtn.Size = UDim2.new(0, 26, 0, 26)
     settingsBtn.Position = UDim2.new(1, -112, 0, 2)
-    settingsBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    settingsBtn.BorderSizePixel = 0
-    settingsBtn.Text = ""
+    settingsBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    settingsBtn.BorderSizePixel = 1
+    settingsBtn.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    settingsBtn.Text = "⚙"
+    settingsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    settingsBtn.TextSize = 16
+    settingsBtn.Font = Enum.Font.Code
     settingsBtn.Parent = topBar
-
-    local settingsCorner = Instance.new("UICorner")
-    settingsCorner.CornerRadius = UDim.new(1, 0)
-    settingsCorner.Parent = settingsBtn
 
     local minimizeBtn = Instance.new("TextButton")
     minimizeBtn.Size = UDim2.new(0, 26, 0, 26)
@@ -161,72 +161,72 @@ function Library:CreateLib(name, theme)
     closeButton.Font = Enum.Font.Code
     closeButton.Parent = topBar
 
-    -- === Настройки (цвет + прозрачность) ===
+    -- === Settings Panel ===
     local settingsFrame = Instance.new("Frame")
-    settingsFrame.Name = "SettingsFrame"
-    settingsFrame.Size = UDim2.new(0, 250, 0, 210)
-    settingsFrame.Position = UDim2.new(1, -260, 0, 35)
+    settingsFrame.Size = UDim2.new(0, 260, 0, 230)
+    settingsFrame.Position = UDim2.new(1, -270, 0, 35)
     settingsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     settingsFrame.BorderSizePixel = 1
-    settingsFrame.BorderColor3 = Color3.fromRGB(70, 70, 70)
+    settingsFrame.BorderColor3 = Color3.fromRGB(60, 60, 60)
     settingsFrame.Visible = false
-    settingsFrame.ZIndex = 200
+    settingsFrame.ZIndex = 150
     settingsFrame.Parent = mainFrame
 
     local sfCorner = Instance.new("UICorner")
     sfCorner.CornerRadius = UDim.new(0, 6)
     sfCorner.Parent = settingsFrame
 
+    local function updateMenuColors()
+        if UIElements.ActiveLine then
+            UIElements.ActiveLine.BackgroundColor3 = CurrentColor
+        end
+    end
+
     local colorTitle = Instance.new("TextLabel")
     colorTitle.Size = UDim2.new(1, -20, 0, 25)
     colorTitle.Position = UDim2.new(0, 10, 0, 10)
     colorTitle.BackgroundTransparency = 1
-    colorTitle.Text = "Цвет меню:"
+    colorTitle.Text = "Menu Color:"
     colorTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
     colorTitle.TextSize = 14
     colorTitle.Font = Enum.Font.Code
     colorTitle.Parent = settingsFrame
 
-    local function createColorOption(text, color)
+    local function createColorButton(text, color)
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -20, 0, 30)
+        btn.Size = UDim2.new(1, -20, 0, 32)
         btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
         btn.Text = text
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.TextSize = 14
         btn.Font = Enum.Font.Code
         btn.Parent = settingsFrame
-        btn.Position = UDim2.new(0, 10, 0, 0) -- будет настроено ниже
 
         btn.MouseButton1Click:Connect(function()
             CurrentColor = color
+            updateMenuColors()
             settingsFrame.Visible = false
         end)
         return btn
     end
 
-    local btn1 = createColorOption("Черно-белый", Color3.fromRGB(255, 255, 255))
-    local btn2 = createColorOption("Оранжево-черный", Color3.fromRGB(255, 140, 0))
-    local btn3 = createColorOption("Фиолетово-черный", Color3.fromRGB(180, 0, 255))
+    createColorButton("Black & White", Color3.fromRGB(255, 255, 255)).Position = UDim2.new(0, 10, 0, 40)
+    createColorButton("Orange & Black", Color3.fromRGB(255, 140, 0)).Position = UDim2.new(0, 10, 0, 77)
+    createColorButton("Purple & Black", Color3.fromRGB(180, 0, 255)).Position = UDim2.new(0, 10, 0, 114)
 
-    btn1.Position = UDim2.new(0, 10, 0, 40)
-    btn2.Position = UDim2.new(0, 10, 0, 75)
-    btn3.Position = UDim2.new(0, 10, 0, 110)
-
-    local transLabel = Instance.new("TextLabel")
-    transLabel.Size = UDim2.new(1, -20, 0, 20)
-    transLabel.Position = UDim2.new(0, 10, 0, 150)
-    transLabel.BackgroundTransparency = 1
-    transLabel.Text = "Прозрачность меню:"
-    transLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    transLabel.TextSize = 13
-    transLabel.Font = Enum.Font.Code
-    transLabel.TextXAlignment = Enum.TextXAlignment.Left
-    transLabel.Parent = settingsFrame
+    local transTitle = Instance.new("TextLabel")
+    transTitle.Size = UDim2.new(1, -20, 0, 20)
+    transTitle.Position = UDim2.new(0, 10, 0, 155)
+    transTitle.BackgroundTransparency = 1
+    transTitle.Text = "Menu Transparency:"
+    transTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+    transTitle.TextSize = 13
+    transTitle.Font = Enum.Font.Code
+    transTitle.Parent = settingsFrame
 
     local transBg = Instance.new("Frame")
     transBg.Size = UDim2.new(1, -70, 0, 8)
-    transBg.Position = UDim2.new(0, 10, 0, 175)
+    transBg.Position = UDim2.new(0, 10, 0, 180)
     transBg.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     transBg.Parent = settingsFrame
 
@@ -237,7 +237,7 @@ function Library:CreateLib(name, theme)
 
     local transBox = Instance.new("TextBox")
     transBox.Size = UDim2.new(0, 50, 0, 20)
-    transBox.Position = UDim2.new(1, -60, 0, 150)
+    transBox.Position = UDim2.new(1, -60, 0, 155)
     transBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     transBox.Text = "1.00"
     transBox.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -245,16 +245,16 @@ function Library:CreateLib(name, theme)
     transBox.Font = Enum.Font.Code
     transBox.Parent = settingsFrame
 
-    local isDraggingTrans = false
+    local draggingTrans = false
 
     transBg.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            isDraggingTrans = true
+            draggingTrans = true
         end
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if isDraggingTrans and input.UserInputType == Enum.UserInputType.MouseMovement then
+        if draggingTrans and input.UserInputType == Enum.UserInputType.MouseMovement then
             local percent = math.clamp((input.Position.X - transBg.AbsolutePosition.X) / transBg.AbsoluteSize.X, 0, 1)
             transFill.Size = UDim2.new(percent, 0, 1, 0)
             transBox.Text = string.format("%.2f", percent)
@@ -264,17 +264,17 @@ function Library:CreateLib(name, theme)
 
     UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            isDraggingTrans = false
+            draggingTrans = false
         end
     end)
 
     transBox.FocusLost:Connect(function()
-        local num = tonumber(transBox.Text)
-        if num then
-            num = math.clamp(num, 0, 1)
-            transBox.Text = string.format("%.2f", num)
-            transFill.Size = UDim2.new(num, 0, 1, 0)
-            mainFrame.BackgroundTransparency = num
+        local val = tonumber(transBox.Text)
+        if val then
+            val = math.clamp(val, 0, 1)
+            transBox.Text = string.format("%.2f", val)
+            transFill.Size = UDim2.new(val, 0, 1, 0)
+            mainFrame.BackgroundTransparency = val
         end
     end)
 

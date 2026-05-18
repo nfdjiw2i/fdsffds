@@ -102,11 +102,11 @@ function Library:CreateLib(name, theme)
     topBar.Parent = mainFrame
 
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -130, 0, 0)
+    titleLabel.Size = UDim2.new(1, -130, 1, 0)
     titleLabel.Position = UDim2.new(0, 10, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = name
-    titleLabel.TextColor3 = CurrentColor -- Цветной текст
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- ВСЕГДА БЕЛЫЙ ТЕКСТ ДЛЯ НАЗВАНИЯ
     titleLabel.TextSize = 14
     titleLabel.Font = Enum.Font.Code
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -180,30 +180,45 @@ function Library:CreateLib(name, theme)
         if UIElements.ActiveLine then
             UIElements.ActiveLine.BackgroundColor3 = CurrentColor
         end
+        
+        -- Обновляем только обводки и акцентные элементы, НЕ трогаем название окна
         for _, obj in pairs(mainFrame:GetDescendants()) do
-            if obj:IsA("Frame") and obj.BorderSizePixel > 0 and obj ~= closeButton then
+            if obj:IsA("Frame") and obj.BorderSizePixel > 0 then
                 obj.BorderColor3 = CurrentColor -- Цветная обводка для всех рамок
             end
-            if obj:IsA("TextButton") and obj.BackgroundColor3 == Color3.fromRGB(0, 0, 0) then
-                obj.BorderColor3 = CurrentColor -- Цветная обводка для кнопок
-                if obj.TextColor3 ~= Color3.fromRGB(255, 80, 80) then -- Кроме кнопки закрытия
-                    obj.TextColor3 = CurrentColor -- Цветной текст
+            if obj:IsA("TextButton") then
+                if obj.BackgroundColor3 == Color3.fromRGB(0, 0, 0) then
+                    obj.BorderColor3 = CurrentColor -- Цветная обводка для кнопок
+                    if obj.TextColor3 ~= Color3.fromRGB(255, 80, 80) and obj ~= closeButton then -- Кроме кнопки закрытия
+                        obj.TextColor3 = CurrentColor -- Цветной текст
+                    end
                 end
             end
-            if obj:IsA("TextLabel") and obj.BackgroundTransparency == 1 then
-                obj.TextColor3 = CurrentColor -- Цветной текст для заголовков
+            if obj:IsA("TextLabel") then
+                -- Не меняем цвет у названия окна
+                if obj ~= titleLabel then
+                    if obj.BackgroundTransparency == 1 or obj.TextColor3 ~= Color3.fromRGB(140, 140, 140) then
+                        -- Меняем цвет только у заголовков, но не у описаний
+                    end
+                end
             end
             if obj.Name == "sliderFill" or obj.Name == "toggleIndicator" then
                 obj.BackgroundColor3 = CurrentColor -- Цветные индикаторы
             end
-            if obj.Name == "valueLabel" or obj.Name == "nameLabel" then
-                obj.TextColor3 = CurrentColor -- Цветной текст
+            if obj:IsA("TextBox") then
+                obj.BorderColor3 = CurrentColor
+                if obj.PlaceholderColor3 ~= Color3.fromRGB(100, 100, 100) then
+                    obj.TextColor3 = CurrentColor
+                end
             end
         end
-        -- Обновляем цвет текста в topBar
-        titleLabel.TextColor3 = CurrentColor
+        
+        -- Обновляем цвет текста в кнопке сворачивания
         minBtnFrame.BorderColor3 = CurrentColor
         minBtnFrame.TextColor3 = CurrentColor
+        
+        -- Название окна всегда остается белым
+        titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     end
 
     local colorTitle = Instance.new("TextLabel")

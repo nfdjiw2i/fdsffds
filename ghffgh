@@ -8,6 +8,7 @@ local UserInputService = cloneref(game:GetService("UserInputService"))
 local CoreGui = cloneref(game:GetService("CoreGui"))
 local TweenService = cloneref(game:GetService("TweenService"))
 local TextService = cloneref(game:GetService("TextService"))
+local Players = cloneref(game:GetService("Players"))
 
 local ToggleStates = {}
 local SliderValues = {}
@@ -17,7 +18,7 @@ local Sections = {}
 local Tabs = {}
 local TabButtons = {}
 
-local CurrentColor = Color3.fromRGB(255, 255, 255) -- По умолчанию черно-белый
+local CurrentColor = Color3.fromRGB(255, 255, 255)
 local CurrentTab = nil
 local TabCounter = 0
 
@@ -58,22 +59,31 @@ function Library:CreateLib(name, theme)
     mainFrame.Name = "MainFrame"
     mainFrame.Size = UDim2.new(0, 600, 0, 400)
     mainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Всегда черный фон
+    mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     mainFrame.BorderSizePixel = 0
     mainFrame.Parent = screenGui
     mainFrame.Active = true
     mainFrame.Draggable = true
     mainFrame.ClipsDescendants = true
 
+    local mainCorner = Instance.new("UICorner")
+    mainCorner.CornerRadius = UDim.new(0, 8)
+    mainCorner.Parent = mainFrame
+
+    local mainStroke = Instance.new("UIStroke")
+    mainStroke.Color = CurrentColor
+    mainStroke.Thickness = 1.5
+    mainStroke.Parent = mainFrame
+
     local minBtnFrame = Instance.new("TextButton")
     minBtnFrame.Name = "MinBtn"
     minBtnFrame.Size = UDim2.new(0, 40, 0, 40)
     minBtnFrame.Position = UDim2.new(0.5, -20, 0.5, -20)
-    minBtnFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+    minBtnFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     minBtnFrame.BorderSizePixel = 1
-    minBtnFrame.BorderColor3 = CurrentColor -- Цветная обводка
+    minBtnFrame.BorderColor3 = CurrentColor
     minBtnFrame.Text = name:sub(1, 1)
-    minBtnFrame.TextColor3 = CurrentColor -- Цветной текст
+    minBtnFrame.TextColor3 = CurrentColor
     minBtnFrame.TextSize = 20
     minBtnFrame.Font = Enum.Font.Code
     minBtnFrame.Parent = screenGui
@@ -97,77 +107,97 @@ function Library:CreateLib(name, theme)
     local topBar = Instance.new("Frame")
     topBar.Name = "TopBar"
     topBar.Size = UDim2.new(1, 0, 0, 30)
-    topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+    topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     topBar.BorderSizePixel = 0
     topBar.Parent = mainFrame
+
+    local topBarStroke = Instance.new("UIStroke")
+    topBarStroke.Color = CurrentColor
+    topBarStroke.Thickness = 1
+    topBarStroke.LineJoinMode = Enum.LineJoinMode.Round
+    topBarStroke.Parent = topBar
 
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -130, 1, 0)
     titleLabel.Position = UDim2.new(0, 10, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = name
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- ВСЕГДА БЕЛЫЙ ТЕКСТ ДЛЯ НАЗВАНИЯ
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 14
     titleLabel.Font = Enum.Font.Code
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
-    -- Кнопка настроек (черный фон, цветная обводка)
     local settingsBtn = Instance.new("TextButton")
     settingsBtn.Size = UDim2.new(0, 26, 0, 26)
     settingsBtn.Position = UDim2.new(1, -112, 0, 2)
-    settingsBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+    settingsBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     settingsBtn.BorderSizePixel = 1
-    settingsBtn.BorderColor3 = CurrentColor -- Цветная обводка
+    settingsBtn.BorderColor3 = CurrentColor
     settingsBtn.Text = "⚙"
-    settingsBtn.TextColor3 = CurrentColor -- Цветной текст
+    settingsBtn.TextColor3 = CurrentColor
     settingsBtn.TextSize = 16
     settingsBtn.Font = Enum.Font.Code
     settingsBtn.Parent = topBar
 
+    local settingsCorner = Instance.new("UICorner")
+    settingsCorner.CornerRadius = UDim.new(0, 4)
+    settingsCorner.Parent = settingsBtn
+
     local minimizeBtn = Instance.new("TextButton")
     minimizeBtn.Size = UDim2.new(0, 26, 0, 26)
     minimizeBtn.Position = UDim2.new(1, -84, 0, 2)
-    minimizeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+    minimizeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     minimizeBtn.BorderSizePixel = 1
-    minimizeBtn.BorderColor3 = CurrentColor -- Цветная обводка
+    minimizeBtn.BorderColor3 = CurrentColor
     minimizeBtn.Text = "-"
-    minimizeBtn.TextColor3 = CurrentColor -- Цветной текст
+    minimizeBtn.TextColor3 = CurrentColor
     minimizeBtn.TextSize = 18
     minimizeBtn.Font = Enum.Font.Code
     minimizeBtn.Parent = topBar
 
+    local minimizeCorner = Instance.new("UICorner")
+    minimizeCorner.CornerRadius = UDim.new(0, 4)
+    minimizeCorner.Parent = minimizeBtn
+
     local hideBtn = Instance.new("TextButton")
     hideBtn.Size = UDim2.new(0, 26, 0, 26)
     hideBtn.Position = UDim2.new(1, -56, 0, 2)
-    hideBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+    hideBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     hideBtn.BorderSizePixel = 1
-    hideBtn.BorderColor3 = CurrentColor -- Цветная обводка
+    hideBtn.BorderColor3 = CurrentColor
     hideBtn.Text = "+"
-    hideBtn.TextColor3 = CurrentColor -- Цветной текст
+    hideBtn.TextColor3 = CurrentColor
     hideBtn.TextSize = 18
     hideBtn.Font = Enum.Font.Code
     hideBtn.Parent = topBar
 
+    local hideCorner = Instance.new("UICorner")
+    hideCorner.CornerRadius = UDim.new(0, 4)
+    hideCorner.Parent = hideBtn
+
     local closeButton = Instance.new("TextButton")
     closeButton.Size = UDim2.new(0, 26, 0, 26)
     closeButton.Position = UDim2.new(1, -28, 0, 2)
-    closeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+    closeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     closeButton.BorderSizePixel = 1
-    closeButton.BorderColor3 = Color3.fromRGB(255, 80, 80) -- Красная обводка для кнопки закрытия
+    closeButton.BorderColor3 = Color3.fromRGB(255, 80, 80)
     closeButton.Text = "X"
-    closeButton.TextColor3 = Color3.fromRGB(255, 80, 80) -- Красный текст для кнопки закрытия
+    closeButton.TextColor3 = Color3.fromRGB(255, 80, 80)
     closeButton.TextSize = 14
     closeButton.Font = Enum.Font.Code
     closeButton.Parent = topBar
 
-    -- === Settings Menu ===
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 4)
+    closeCorner.Parent = closeButton
+
     local settingsFrame = Instance.new("Frame")
     settingsFrame.Size = UDim2.new(0, 260, 0, 270)
     settingsFrame.Position = UDim2.new(1, -270, 0, 35)
-    settingsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+    settingsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     settingsFrame.BorderSizePixel = 1
-    settingsFrame.BorderColor3 = CurrentColor -- Цветная обводка
+    settingsFrame.BorderColor3 = CurrentColor
     settingsFrame.Visible = false
     settingsFrame.ZIndex = 150
     settingsFrame.Parent = mainFrame
@@ -181,44 +211,41 @@ function Library:CreateLib(name, theme)
             UIElements.ActiveLine.BackgroundColor3 = CurrentColor
         end
         
-        -- Обновляем только обводки и акцентные элементы, НЕ трогаем название окна
+        mainStroke.Color = CurrentColor
+        topBarStroke.Color = CurrentColor
+        
         for _, obj in pairs(mainFrame:GetDescendants()) do
             if obj:IsA("Frame") and obj.BorderSizePixel > 0 then
-                obj.BorderColor3 = CurrentColor -- Цветная обводка для всех рамок
+                obj.BorderColor3 = CurrentColor
             end
             if obj:IsA("TextButton") then
                 if obj.BackgroundColor3 == Color3.fromRGB(0, 0, 0) then
-                    obj.BorderColor3 = CurrentColor -- Цветная обводка для кнопок
-                    if obj.TextColor3 ~= Color3.fromRGB(255, 80, 80) and obj ~= closeButton then -- Кроме кнопки закрытия
-                        obj.TextColor3 = CurrentColor -- Цветной текст
+                    obj.BorderColor3 = CurrentColor
+                    if obj.TextColor3 ~= Color3.fromRGB(255, 80, 80) and obj ~= closeButton then
+                        obj.TextColor3 = CurrentColor
                     end
                 end
             end
-            if obj:IsA("TextLabel") then
-                -- Не меняем цвет у названия окна
-                if obj ~= titleLabel then
-                    if obj.BackgroundTransparency == 1 or obj.TextColor3 ~= Color3.fromRGB(140, 140, 140) then
-                        -- Меняем цвет только у заголовков, но не у описаний
-                    end
-                end
+            if obj:IsA("UIStroke") and obj ~= mainStroke and obj ~= topBarStroke then
+                obj.Color = CurrentColor
             end
             if obj.Name == "sliderFill" or obj.Name == "toggleIndicator" then
-                obj.BackgroundColor3 = CurrentColor -- Цветные индикаторы
+                obj.BackgroundColor3 = CurrentColor
             end
             if obj:IsA("TextBox") then
                 obj.BorderColor3 = CurrentColor
-                if obj.PlaceholderColor3 ~= Color3.fromRGB(100, 100, 100) then
-                    obj.TextColor3 = CurrentColor
-                end
             end
         end
         
-        -- Обновляем цвет текста в кнопке сворачивания
         minBtnFrame.BorderColor3 = CurrentColor
         minBtnFrame.TextColor3 = CurrentColor
-        
-        -- Название окна всегда остается белым
         titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        
+        for _, tab in pairs(Tabs) do
+            if tab.Frame then
+                tab.Frame.ScrollBarImageColor3 = CurrentColor
+            end
+        end
     end
 
     local colorTitle = Instance.new("TextLabel")
@@ -226,22 +253,27 @@ function Library:CreateLib(name, theme)
     colorTitle.Position = UDim2.new(0, 10, 0, 10)
     colorTitle.BackgroundTransparency = 1
     colorTitle.Text = "Menu Color:"
-    colorTitle.TextColor3 = CurrentColor -- Цветной текст
+    colorTitle.TextColor3 = CurrentColor
     colorTitle.TextSize = 14
     colorTitle.Font = Enum.Font.Code
     colorTitle.Parent = settingsFrame
 
-    local function createColorButton(text, color)
+    local function createColorButton(text, color, yPos)
         local btn = Instance.new("TextButton")
         btn.Size = UDim2.new(1, -20, 0, 32)
-        btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+        btn.Position = UDim2.new(0, 10, 0, yPos)
+        btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         btn.BorderSizePixel = 1
-        btn.BorderColor3 = color -- Цветная обводка
+        btn.BorderColor3 = color
         btn.Text = text
-        btn.TextColor3 = color -- Цветной текст
+        btn.TextColor3 = color
         btn.TextSize = 14
         btn.Font = Enum.Font.Code
         btn.Parent = settingsFrame
+
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 4)
+        btnCorner.Parent = btn
 
         btn.MouseButton1Click:Connect(function()
             CurrentColor = color
@@ -251,17 +283,17 @@ function Library:CreateLib(name, theme)
         return btn
     end
 
-    createColorButton("Black & White", Color3.fromRGB(255, 255, 255)).Position = UDim2.new(0, 10, 0, 40)
-    createColorButton("Dark Gray & Black", Color3.fromRGB(100, 100, 100)).Position = UDim2.new(0, 10, 0, 77)
-    createColorButton("Orange & Black", Color3.fromRGB(255, 140, 0)).Position = UDim2.new(0, 10, 0, 114)
-    createColorButton("Purple & Black", Color3.fromRGB(180, 0, 255)).Position = UDim2.new(0, 10, 0, 151)
+    createColorButton("Black & White", Color3.fromRGB(255, 255, 255), 40)
+    createColorButton("Dark Gray & Black", Color3.fromRGB(100, 100, 100), 77)
+    createColorButton("Orange & Black", Color3.fromRGB(255, 140, 0), 114)
+    createColorButton("Purple & Black", Color3.fromRGB(180, 0, 255), 151)
 
     local transTitle = Instance.new("TextLabel")
     transTitle.Size = UDim2.new(1, -20, 0, 20)
     transTitle.Position = UDim2.new(0, 10, 0, 195)
     transTitle.BackgroundTransparency = 1
     transTitle.Text = "Menu Transparency:"
-    transTitle.TextColor3 = CurrentColor -- Цветной текст
+    transTitle.TextColor3 = CurrentColor
     transTitle.TextSize = 13
     transTitle.Font = Enum.Font.Code
     transTitle.Parent = settingsFrame
@@ -272,25 +304,40 @@ function Library:CreateLib(name, theme)
     transBg.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     transBg.Parent = settingsFrame
 
+    local transBgCorner = Instance.new("UICorner")
+    transBgCorner.CornerRadius = UDim.new(0, 4)
+    transBgCorner.Parent = transBg
+
     local transFill = Instance.new("Frame")
     transFill.Size = UDim2.new(1, 0, 1, 0)
-    transFill.BackgroundColor3 = CurrentColor -- Цветной индикатор
+    transFill.BackgroundColor3 = CurrentColor
     transFill.Parent = transBg
+
+    local transFillCorner = Instance.new("UICorner")
+    transFillCorner.CornerRadius = UDim.new(0, 4)
+    transFillCorner.Parent = transFill
 
     local transBox = Instance.new("TextBox")
     transBox.Size = UDim2.new(0, 50, 0, 20)
     transBox.Position = UDim2.new(1, -60, 0, 195)
-    transBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
-    transBox.BorderColor3 = CurrentColor -- Цветная обводка
+    transBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    transBox.BorderColor3 = CurrentColor
+    transBox.BorderSizePixel = 1
     transBox.Text = "1.00"
-    transBox.TextColor3 = CurrentColor -- Цветной текст
+    transBox.TextColor3 = CurrentColor
     transBox.TextSize = 13
     transBox.Font = Enum.Font.Code
     transBox.Parent = settingsFrame
 
+    local transBoxCorner = Instance.new("UICorner")
+    transBoxCorner.CornerRadius = UDim.new(0, 4)
+    transBoxCorner.Parent = transBox
+
     local draggingTrans = false
     transBg.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then draggingTrans = true end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then 
+            draggingTrans = true 
+        end
     end)
 
     UserInputService.InputChanged:Connect(function(input)
@@ -299,11 +346,14 @@ function Library:CreateLib(name, theme)
             transFill.Size = UDim2.new(percent, 0, 1, 0)
             transBox.Text = string.format("%.2f", percent)
             mainFrame.BackgroundTransparency = percent
+            topBar.BackgroundTransparency = percent
         end
     end)
 
     UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then draggingTrans = false end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then 
+            draggingTrans = false 
+        end
     end)
 
     transBox.FocusLost:Connect(function()
@@ -313,6 +363,7 @@ function Library:CreateLib(name, theme)
             transBox.Text = string.format("%.2f", val)
             transFill.Size = UDim2.new(val, 0, 1, 0)
             mainFrame.BackgroundTransparency = val
+            topBar.BackgroundTransparency = val
         end
     end)
 
@@ -378,7 +429,7 @@ function Library:CreateLib(name, theme)
         mainFrame.Draggable = false
         startMousePos = UserInputService:GetMouseLocation()
         startFrameSize = mainFrame.AbsoluteSize
-        resizeHandle.BackgroundColor3 = CurrentColor -- Цветной индикатор при ресайзе
+        resizeHandle.BackgroundColor3 = CurrentColor
     end)
     
     UserInputService.InputChanged:Connect(function(input)
@@ -407,7 +458,7 @@ function Library:CreateLib(name, theme)
     tabContainer.Name = "TabContainer"
     tabContainer.Size = UDim2.new(1, 0, 0, 35)
     tabContainer.Position = UDim2.new(0, 0, 0, 30)
-    tabContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+    tabContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     tabContainer.BorderSizePixel = 0
     tabContainer.Parent = mainFrame
 
@@ -446,14 +497,18 @@ function Library:CreateLib(name, theme)
         local tabButton = Instance.new("TextButton")
         tabButton.Name = "TabButton_" .. tabCount
         tabButton.Size = UDim2.new(0, 100, 1, -6)
-        tabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+        tabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         tabButton.BorderSizePixel = 1
-        tabButton.BorderColor3 = CurrentColor -- Цветная обводка
+        tabButton.BorderColor3 = CurrentColor
         tabButton.Text = name
-        tabButton.TextColor3 = (tabCount == 1) and CurrentColor or Color3.fromRGB(140, 140, 140) -- Цветной текст для активной вкладки
+        tabButton.TextColor3 = (tabCount == 1) and CurrentColor or Color3.fromRGB(140, 140, 140)
         tabButton.TextSize = 14
         tabButton.Font = Enum.Font.Code
         tabButton.Parent = tabContainer
+
+        local tabCorner = Instance.new("UICorner")
+        tabCorner.CornerRadius = UDim.new(0, 4)
+        tabCorner.Parent = tabButton
 
         table.insert(TabButtons, tabButton)
 
@@ -465,7 +520,9 @@ function Library:CreateLib(name, theme)
         section.BorderSizePixel = 0
         section.CanvasSize = UDim2.new(0, 0, 0, 0)
         section.ScrollBarThickness = 8
-        section.ScrollBarImageColor3 = CurrentColor -- Цветной скроллбар
+        section.ScrollBarImageColor3 = CurrentColor
+        section.ScrollingDirection = Enum.ScrollingDirection.Y
+        section.AutomaticCanvasSize = Enum.AutomaticSize.Y
         section.Parent = ColumnsFrame
         section.Visible = (tabCount == 1)
 
@@ -494,7 +551,7 @@ function Library:CreateLib(name, theme)
             local line = Instance.new("Frame")
             line.Size = UDim2.new(1, 0, 0, 2)
             line.Position = UDim2.new(0, 0, 1, -2)
-            line.BackgroundColor3 = CurrentColor -- Цветная линия
+            line.BackgroundColor3 = CurrentColor
             line.BorderSizePixel = 0
             line.Parent = tabButton
             UIElements.ActiveLine = line
@@ -505,7 +562,7 @@ function Library:CreateLib(name, theme)
             for _, btn in ipairs(TabButtons) do
                 btn.TextColor3 = Color3.fromRGB(140, 140, 140)
             end
-            tabButton.TextColor3 = CurrentColor -- Цветной текст для активной вкладки
+            tabButton.TextColor3 = CurrentColor
 
             if UIElements.ActiveLine then
                 UIElements.ActiveLine:Destroy()
@@ -514,7 +571,7 @@ function Library:CreateLib(name, theme)
             local line = Instance.new("Frame")
             line.Size = UDim2.new(1, 0, 0, 2)
             line.Position = UDim2.new(0, 0, 1, -2)
-            line.BackgroundColor3 = CurrentColor -- Цветная линия
+            line.BackgroundColor3 = CurrentColor
             line.BorderSizePixel = 0
             line.Parent = tabButton
             UIElements.ActiveLine = line
@@ -541,7 +598,7 @@ function Library:CreateLib(name, theme)
             sectionTitle.Position = UDim2.new(0, 0, 0, yPos)
             sectionTitle.BackgroundTransparency = 1
             sectionTitle.Text = "// " .. sectionName
-            sectionTitle.TextColor3 = CurrentColor -- Цветной текст
+            sectionTitle.TextColor3 = CurrentColor
             sectionTitle.TextSize = 16
             sectionTitle.Font = Enum.Font.Code
             sectionTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -550,7 +607,7 @@ function Library:CreateLib(name, theme)
             local sectionLine = Instance.new("Frame")
             sectionLine.Size = UDim2.new(1, 0, 0, 1)
             sectionLine.Position = UDim2.new(0, 0, 0, yPos + 28)
-            sectionLine.BackgroundColor3 = CurrentColor -- Цветная линия
+            sectionLine.BackgroundColor3 = CurrentColor
             sectionLine.BorderSizePixel = 0
             sectionLine.Parent = container
 
@@ -561,7 +618,7 @@ function Library:CreateLib(name, theme)
                 local children = container:GetChildren()
                 local frames = {}
                 for _, child in ipairs(children) do
-                    if child:IsA("Frame") and child ~= sectionTitle and child ~= sectionLine then
+                    if child:IsA("Frame") and child ~= sectionTitle and child ~= sectionLine and child.Name ~= "PlayerListContainer" then
                         table.insert(frames, child)
                     end
                 end
@@ -572,8 +629,120 @@ function Library:CreateLib(name, theme)
                     child.Position = UDim2.new(child.Position.X.Scale, child.Position.X.Offset, 0, startY)
                     startY = startY + child.Size.Y.Offset + 10
                 end
+                
+                -- Учитываем PlayerListContainer если он есть
+                local playerListContainer = container:FindFirstChild("PlayerListContainer")
+                if playerListContainer then
+                    startY = startY + playerListContainer.Size.Y.Offset + 10
+                end
+                
                 tabData.YPosition = startY
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, startY + 10)
+            end
+
+            function SectionObject:NewPlayerList()
+                local playerFrames = {}
+                local currentY = tabData.YPosition
+                
+                local playerListContainer = Instance.new("Frame")
+                playerListContainer.Name = "PlayerListContainer"
+                playerListContainer.Size = UDim2.new(1, 0, 0, 0)
+                playerListContainer.Position = UDim2.new(0, 0, 0, currentY)
+                playerListContainer.BackgroundTransparency = 1
+                playerListContainer.Parent = container
+
+                local function updatePlayerList()
+                    for _, frame in pairs(playerFrames) do
+                        if frame then
+                            frame:Destroy()
+                        end
+                    end
+                    playerFrames = {}
+
+                    local players = Players:GetPlayers()
+                    local localPlayer = Players.LocalPlayer
+                    local yOffset = 0
+
+                    for _, player in ipairs(players) do
+                        if player ~= localPlayer then
+                            local playerFrame = Instance.new("Frame")
+                            playerFrame.Size = UDim2.new(1, 0, 0, 50)
+                            playerFrame.Position = UDim2.new(0, 0, 0, yOffset)
+                            playerFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                            playerFrame.BorderSizePixel = 1
+                            playerFrame.BorderColor3 = CurrentColor
+                            playerFrame.Parent = playerListContainer
+
+                            local frameCorner = Instance.new("UICorner")
+                            frameCorner.CornerRadius = UDim.new(0, 4)
+                            frameCorner.Parent = playerFrame
+
+                            local nameLabel = Instance.new("TextLabel")
+                            nameLabel.Size = UDim2.new(1, -20, 0, 25)
+                            nameLabel.Position = UDim2.new(0, 10, 0, 5)
+                            nameLabel.BackgroundTransparency = 1
+                            nameLabel.Text = "🎮 " .. player.Name
+                            nameLabel.TextColor3 = CurrentColor
+                            nameLabel.TextSize = 14
+                            nameLabel.Font = Enum.Font.Code
+                            nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+                            nameLabel.Parent = playerFrame
+
+                            local descLabel = Instance.new("TextLabel")
+                            descLabel.Size = UDim2.new(1, -20, 0, 20)
+                            descLabel.Position = UDim2.new(0, 10, 0, 25)
+                            descLabel.BackgroundTransparency = 1
+                            descLabel.Text = "Click to teleport"
+                            descLabel.TextColor3 = Color3.fromRGB(140, 140, 140)
+                            descLabel.TextSize = 10
+                            descLabel.Font = Enum.Font.Code
+                            descLabel.TextXAlignment = Enum.TextXAlignment.Left
+                            descLabel.Parent = playerFrame
+
+                            local button = Instance.new("TextButton")
+                            button.Size = UDim2.new(1, 0, 1, 0)
+                            button.BackgroundTransparency = 1
+                            button.Text = ""
+                            button.Parent = playerFrame
+
+                            local targetPlayer = player
+                            button.MouseButton1Click:Connect(function()
+                                local lp = Players.LocalPlayer
+                                if lp.Character and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                                    lp.Character:PivotTo(targetPlayer.Character.HumanoidRootPart.CFrame)
+                                end
+                            end)
+
+                            button.MouseEnter:Connect(function()
+                                playerFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                            end)
+                            button.MouseLeave:Connect(function()
+                                playerFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                            end)
+
+                            table.insert(playerFrames, playerFrame)
+                            yOffset = yOffset + 55
+                        end
+                    end
+
+                    playerListContainer.Size = UDim2.new(1, 0, 0, yOffset)
+                    updateAllPositions()
+                end
+
+                updatePlayerList()
+
+                Players.PlayerAdded:Connect(function()
+                    task.wait(0.1)
+                    updatePlayerList()
+                end)
+
+                Players.PlayerRemoving:Connect(function()
+                    task.wait(0.1)
+                    updatePlayerList()
+                end)
+
+                tabData.YPosition = currentY
+                tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
             end
 
             function SectionObject:NewButton(buttonName, description, callback)
@@ -582,17 +751,21 @@ function Library:CreateLib(name, theme)
                 local buttonFrame = Instance.new("Frame")
                 buttonFrame.Size = UDim2.new(1, 0, 0, 60)
                 buttonFrame.Position = UDim2.new(0, 0, 0, currentY)
-                buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 buttonFrame.BorderSizePixel = 1
-                buttonFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                buttonFrame.BorderColor3 = CurrentColor
                 buttonFrame.Parent = container
+
+                local frameCorner = Instance.new("UICorner")
+                frameCorner.CornerRadius = UDim.new(0, 4)
+                frameCorner.Parent = buttonFrame
 
                 local nameLabel = Instance.new("TextLabel")
                 nameLabel.Size = UDim2.new(1, -20, 0, 25)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = buttonName
-                nameLabel.TextColor3 = CurrentColor -- Цветной текст
+                nameLabel.TextColor3 = CurrentColor
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -616,15 +789,15 @@ function Library:CreateLib(name, theme)
                 button.Parent = buttonFrame
 
                 button.MouseEnter:Connect(function()
-                    buttonFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                    TweenService:Create(buttonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 25)}):Play()
                 end)
                 button.MouseLeave:Connect(function()
-                    buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                    TweenService:Create(buttonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 0, 0)}):Play()
                 end)
                 button.MouseButton1Click:Connect(function()
-                    buttonFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+                    TweenService:Create(buttonFrame, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
                     task.wait(0.1)
-                    buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                    TweenService:Create(buttonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 0, 0)}):Play()
                     if callback then
                         local success, err = pcall(callback)
                         if not success then
@@ -635,6 +808,7 @@ function Library:CreateLib(name, theme)
 
                 tabData.YPosition = currentY + 70
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
+                return buttonFrame
             end
 
             function SectionObject:NewToggle(toggleName, description, callback)
@@ -644,17 +818,21 @@ function Library:CreateLib(name, theme)
                 local toggleFrame = Instance.new("Frame")
                 toggleFrame.Size = UDim2.new(1, 0, 0, 50)
                 toggleFrame.Position = UDim2.new(0, 0, 0, currentY)
-                toggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                toggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 toggleFrame.BorderSizePixel = 1
-                toggleFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                toggleFrame.BorderColor3 = CurrentColor
                 toggleFrame.Parent = container
+
+                local frameCorner = Instance.new("UICorner")
+                frameCorner.CornerRadius = UDim.new(0, 4)
+                frameCorner.Parent = toggleFrame
 
                 local nameLabel = Instance.new("TextLabel")
                 nameLabel.Size = UDim2.new(1, -80, 0, 25)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = toggleName
-                nameLabel.TextColor3 = CurrentColor -- Цветной текст
+                nameLabel.TextColor3 = CurrentColor
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -676,27 +854,33 @@ function Library:CreateLib(name, theme)
                 toggleBg.Position = UDim2.new(1, -60, 0.5, -12)
                 toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 toggleBg.BorderSizePixel = 1
-                toggleBg.BorderColor3 = CurrentColor -- Цветная обводка
+                toggleBg.BorderColor3 = CurrentColor
                 toggleBg.Parent = toggleFrame
+
+                local bgCorner = Instance.new("UICorner")
+                bgCorner.CornerRadius = UDim.new(0, 12)
+                bgCorner.Parent = toggleBg
 
                 local toggleIndicator = Instance.new("Frame")
                 toggleIndicator.Size = UDim2.new(0, 20, 0, 16)
                 toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                 toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
                 toggleIndicator.BorderSizePixel = 1
-                toggleIndicator.BorderColor3 = CurrentColor -- Цветная обводка
+                toggleIndicator.BorderColor3 = CurrentColor
                 toggleIndicator.Parent = toggleBg
+
+                local indicatorCorner = Instance.new("UICorner")
+                indicatorCorner.CornerRadius = UDim.new(0, 8)
+                indicatorCorner.Parent = toggleIndicator
 
                 local toggleState = false
                 ToggleStates[toggleId] = false
 
                 local function updateToggle()
                     if toggleState then
-                        toggleIndicator.BackgroundColor3 = CurrentColor -- Цветной индикатор
-                        toggleIndicator.Position = UDim2.new(1, -22, 0.5, -8)
+                        TweenService:Create(toggleIndicator, TweenInfo.new(0.2), {BackgroundColor3 = CurrentColor, Position = UDim2.new(1, -22, 0.5, -8)}):Play()
                     else
-                        toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-                        toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
+                        TweenService:Create(toggleIndicator, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(100, 100, 100), Position = UDim2.new(0, 2, 0.5, -8)}):Play()
                     end
                 end
 
@@ -726,6 +910,7 @@ function Library:CreateLib(name, theme)
 
                 tabData.YPosition = currentY + 60
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
+                return toggleFrame
             end
 
             function SectionObject:NewSlider(sliderName, description, min, max, default, callback)
@@ -735,17 +920,21 @@ function Library:CreateLib(name, theme)
                 local sliderFrame = Instance.new("Frame")
                 sliderFrame.Size = UDim2.new(1, 0, 0, 70)
                 sliderFrame.Position = UDim2.new(0, 0, 0, currentY)
-                sliderFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                sliderFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 sliderFrame.BorderSizePixel = 1
-                sliderFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                sliderFrame.BorderColor3 = CurrentColor
                 sliderFrame.Parent = container
+
+                local frameCorner = Instance.new("UICorner")
+                frameCorner.CornerRadius = UDim.new(0, 4)
+                frameCorner.Parent = sliderFrame
 
                 local nameLabel = Instance.new("TextLabel")
                 nameLabel.Size = UDim2.new(1, -20, 0, 25)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = sliderName
-                nameLabel.TextColor3 = CurrentColor -- Цветной текст
+                nameLabel.TextColor3 = CurrentColor
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -765,28 +954,40 @@ function Library:CreateLib(name, theme)
                 local valueLabel = Instance.new("TextLabel")
                 valueLabel.Size = UDim2.new(0, 50, 0, 20)
                 valueLabel.Position = UDim2.new(1, -60, 0, 28)
-                valueLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                valueLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 valueLabel.BorderSizePixel = 1
-                valueLabel.BorderColor3 = CurrentColor -- Цветная обводка
+                valueLabel.BorderColor3 = CurrentColor
                 valueLabel.Text = tostring(default or min)
-                valueLabel.TextColor3 = CurrentColor -- Цветной текст
+                valueLabel.TextColor3 = CurrentColor
                 valueLabel.TextSize = 12
                 valueLabel.Font = Enum.Font.Code
                 valueLabel.Parent = sliderFrame
+
+                local valCorner = Instance.new("UICorner")
+                valCorner.CornerRadius = UDim.new(0, 4)
+                valCorner.Parent = valueLabel
 
                 local sliderBg = Instance.new("Frame")
                 sliderBg.Size = UDim2.new(1, -80, 0, 10)
                 sliderBg.Position = UDim2.new(0, 10, 0, 50)
                 sliderBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 sliderBg.BorderSizePixel = 1
-                sliderBg.BorderColor3 = CurrentColor -- Цветная обводка
+                sliderBg.BorderColor3 = CurrentColor
                 sliderBg.Parent = sliderFrame
+
+                local bgCorner = Instance.new("UICorner")
+                bgCorner.CornerRadius = UDim.new(0, 5)
+                bgCorner.Parent = sliderBg
 
                 local sliderFill = Instance.new("Frame")
                 sliderFill.Size = UDim2.new(0, 0, 1, 0)
-                sliderFill.BackgroundColor3 = CurrentColor -- Цветной индикатор
+                sliderFill.BackgroundColor3 = CurrentColor
                 sliderFill.BorderSizePixel = 0
                 sliderFill.Parent = sliderBg
+
+                local fillCorner = Instance.new("UICorner")
+                fillCorner.CornerRadius = UDim.new(0, 5)
+                fillCorner.Parent = sliderFill
 
                 local sliderButton = Instance.new("TextButton")
                 sliderButton.Size = UDim2.new(1, 0, 1, 0)
@@ -854,6 +1055,7 @@ function Library:CreateLib(name, theme)
 
                 tabData.YPosition = currentY + 80
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
+                return sliderFrame
             end
 
             function SectionObject:NewDropdown(dropdownName, description)
@@ -866,11 +1068,15 @@ function Library:CreateLib(name, theme)
                 dropdownFrame = Instance.new("Frame")
                 dropdownFrame.Size = UDim2.new(1, 0, 0, 50)
                 dropdownFrame.Position = UDim2.new(0, 0, 0, currentY)
-                dropdownFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                dropdownFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 dropdownFrame.BorderSizePixel = 1
-                dropdownFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                dropdownFrame.BorderColor3 = CurrentColor
                 dropdownFrame.Parent = container
                 dropdownFrame.ClipsDescendants = true
+
+                local frameCorner = Instance.new("UICorner")
+                frameCorner.CornerRadius = UDim.new(0, 4)
+                frameCorner.Parent = dropdownFrame
 
                 local dropdownButton = Instance.new("TextButton")
                 dropdownButton.Size = UDim2.new(1, 0, 0, 50)
@@ -884,7 +1090,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = dropdownName
-                nameLabel.TextColor3 = CurrentColor -- Цветной текст
+                nameLabel.TextColor3 = CurrentColor
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -906,7 +1112,7 @@ function Library:CreateLib(name, theme)
                 arrowLabel.Position = UDim2.new(1, -40, 0, 10)
                 arrowLabel.BackgroundTransparency = 1
                 arrowLabel.Text = "▼"
-                arrowLabel.TextColor3 = CurrentColor -- Цветной текст
+                arrowLabel.TextColor3 = CurrentColor
                 arrowLabel.TextSize = 20
                 arrowLabel.Font = Enum.Font.Code
                 arrowLabel.Parent = dropdownFrame
@@ -924,11 +1130,12 @@ function Library:CreateLib(name, theme)
                     if isOpen then
                         arrowLabel.Text = "▲"
                         dropdownContent.Visible = true
-                        dropdownFrame.Size = UDim2.new(1, 0, 0, 50 + contentY)
+                        TweenService:Create(dropdownFrame, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, 50 + contentY)}):Play()
                     else
                         arrowLabel.Text = "▼"
+                        TweenService:Create(dropdownFrame, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, 50)}):Play()
+                        task.wait(0.3)
                         dropdownContent.Visible = false
-                        dropdownFrame.Size = UDim2.new(1, 0, 0, 50)
                     end
                     updateAllPositions()
                 end
@@ -949,17 +1156,21 @@ function Library:CreateLib(name, theme)
                     local buttonFrame = Instance.new("Frame")
                     buttonFrame.Size = UDim2.new(1, -20, 0, 40)
                     buttonFrame.Position = UDim2.new(0, 10, 0, btnY)
-                    buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                    buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                     buttonFrame.BorderSizePixel = 1
-                    buttonFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                    buttonFrame.BorderColor3 = CurrentColor
                     buttonFrame.Parent = dropdownRef.content
+
+                    local btnCorner = Instance.new("UICorner")
+                    btnCorner.CornerRadius = UDim.new(0, 4)
+                    btnCorner.Parent = buttonFrame
 
                     local nameLabel = Instance.new("TextLabel")
                     nameLabel.Size = UDim2.new(1, -20, 1, 0)
                     nameLabel.Position = UDim2.new(0, 10, 0, 0)
                     nameLabel.BackgroundTransparency = 1
                     nameLabel.Text = buttonName
-                    nameLabel.TextColor3 = CurrentColor -- Цветной текст
+                    nameLabel.TextColor3 = CurrentColor
                     nameLabel.TextSize = 14
                     nameLabel.Font = Enum.Font.Code
                     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -972,15 +1183,15 @@ function Library:CreateLib(name, theme)
                     button.Parent = buttonFrame
 
                     button.MouseEnter:Connect(function()
-                        buttonFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                        TweenService:Create(buttonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
                     end)
                     button.MouseLeave:Connect(function()
-                        buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                        TweenService:Create(buttonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 0, 0)}):Play()
                     end)
                     button.MouseButton1Click:Connect(function()
-                        buttonFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                        TweenService:Create(buttonFrame, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
                         task.wait(0.1)
-                        buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                        TweenService:Create(buttonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 0, 0)}):Play()
                         if callback then
                             local success, err = pcall(callback)
                             if not success then
@@ -1004,17 +1215,21 @@ function Library:CreateLib(name, theme)
                     local toggleFrame = Instance.new("Frame")
                     toggleFrame.Size = UDim2.new(1, -20, 0, 50)
                     toggleFrame.Position = UDim2.new(0, 10, 0, btnY)
-                    toggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                    toggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                     toggleFrame.BorderSizePixel = 1
-                    toggleFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                    toggleFrame.BorderColor3 = CurrentColor
                     toggleFrame.Parent = dropdownRef.content
+
+                    local btnCorner = Instance.new("UICorner")
+                    btnCorner.CornerRadius = UDim.new(0, 4)
+                    btnCorner.Parent = toggleFrame
 
                     local nameLabel = Instance.new("TextLabel")
                     nameLabel.Size = UDim2.new(1, -80, 0, 25)
                     nameLabel.Position = UDim2.new(0, 10, 0, 5)
                     nameLabel.BackgroundTransparency = 1
                     nameLabel.Text = toggleName
-                    nameLabel.TextColor3 = CurrentColor -- Цветной текст
+                    nameLabel.TextColor3 = CurrentColor
                     nameLabel.TextSize = 14
                     nameLabel.Font = Enum.Font.Code
                     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1036,27 +1251,33 @@ function Library:CreateLib(name, theme)
                     toggleBg.Position = UDim2.new(1, -60, 0.5, -12)
                     toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                     toggleBg.BorderSizePixel = 1
-                    toggleBg.BorderColor3 = CurrentColor -- Цветная обводка
+                    toggleBg.BorderColor3 = CurrentColor
                     toggleBg.Parent = toggleFrame
+
+                    local bgCorner = Instance.new("UICorner")
+                    bgCorner.CornerRadius = UDim.new(0, 12)
+                    bgCorner.Parent = toggleBg
 
                     local toggleIndicator = Instance.new("Frame")
                     toggleIndicator.Size = UDim2.new(0, 20, 0, 16)
                     toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                     toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
                     toggleIndicator.BorderSizePixel = 1
-                    toggleIndicator.BorderColor3 = CurrentColor -- Цветная обводка
+                    toggleIndicator.BorderColor3 = CurrentColor
                     toggleIndicator.Parent = toggleBg
+
+                    local indicatorCorner = Instance.new("UICorner")
+                    indicatorCorner.CornerRadius = UDim.new(0, 8)
+                    indicatorCorner.Parent = toggleIndicator
 
                     local toggleState = false
                     ToggleStates[toggleId] = false
 
                     local function updateToggle()
                         if toggleState then
-                            toggleIndicator.BackgroundColor3 = CurrentColor -- Цветной индикатор
-                            toggleIndicator.Position = UDim2.new(1, -22, 0.5, -8)
+                            TweenService:Create(toggleIndicator, TweenInfo.new(0.2), {BackgroundColor3 = CurrentColor, Position = UDim2.new(1, -22, 0.5, -8)}):Play()
                         else
-                            toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-                            toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
+                            TweenService:Create(toggleIndicator, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(100, 100, 100), Position = UDim2.new(0, 2, 0.5, -8)}):Play()
                         end
                     end
 
@@ -1095,17 +1316,21 @@ function Library:CreateLib(name, theme)
                     local sliderFrame = Instance.new("Frame")
                     sliderFrame.Size = UDim2.new(1, -20, 0, 70)
                     sliderFrame.Position = UDim2.new(0, 10, 0, btnY)
-                    sliderFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                    sliderFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                     sliderFrame.BorderSizePixel = 1
-                    sliderFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                    sliderFrame.BorderColor3 = CurrentColor
                     sliderFrame.Parent = dropdownRef.content
+
+                    local btnCorner = Instance.new("UICorner")
+                    btnCorner.CornerRadius = UDim.new(0, 4)
+                    btnCorner.Parent = sliderFrame
 
                     local nameLabel = Instance.new("TextLabel")
                     nameLabel.Size = UDim2.new(1, -20, 0, 25)
                     nameLabel.Position = UDim2.new(0, 10, 0, 5)
                     nameLabel.BackgroundTransparency = 1
                     nameLabel.Text = sliderName
-                    nameLabel.TextColor3 = CurrentColor -- Цветной текст
+                    nameLabel.TextColor3 = CurrentColor
                     nameLabel.TextSize = 14
                     nameLabel.Font = Enum.Font.Code
                     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1125,28 +1350,40 @@ function Library:CreateLib(name, theme)
                     local valueLabel = Instance.new("TextLabel")
                     valueLabel.Size = UDim2.new(0, 50, 0, 20)
                     valueLabel.Position = UDim2.new(1, -60, 0, 28)
-                    valueLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                    valueLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                     valueLabel.BorderSizePixel = 1
-                    valueLabel.BorderColor3 = CurrentColor -- Цветная обводка
+                    valueLabel.BorderColor3 = CurrentColor
                     valueLabel.Text = tostring(default or min)
-                    valueLabel.TextColor3 = CurrentColor -- Цветной текст
+                    valueLabel.TextColor3 = CurrentColor
                     valueLabel.TextSize = 12
                     valueLabel.Font = Enum.Font.Code
                     valueLabel.Parent = sliderFrame
+
+                    local valCorner = Instance.new("UICorner")
+                    valCorner.CornerRadius = UDim.new(0, 4)
+                    valCorner.Parent = valueLabel
 
                     local sliderBg = Instance.new("Frame")
                     sliderBg.Size = UDim2.new(1, -80, 0, 10)
                     sliderBg.Position = UDim2.new(0, 10, 0, 50)
                     sliderBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                     sliderBg.BorderSizePixel = 1
-                    sliderBg.BorderColor3 = CurrentColor -- Цветная обводка
+                    sliderBg.BorderColor3 = CurrentColor
                     sliderBg.Parent = sliderFrame
+
+                    local bgCorner = Instance.new("UICorner")
+                    bgCorner.CornerRadius = UDim.new(0, 5)
+                    bgCorner.Parent = sliderBg
 
                     local sliderFill = Instance.new("Frame")
                     sliderFill.Size = UDim2.new(0, 0, 1, 0)
-                    sliderFill.BackgroundColor3 = CurrentColor -- Цветной индикатор
+                    sliderFill.BackgroundColor3 = CurrentColor
                     sliderFill.BorderSizePixel = 0
                     sliderFill.Parent = sliderBg
+
+                    local fillCorner = Instance.new("UICorner")
+                    fillCorner.CornerRadius = UDim.new(0, 5)
+                    fillCorner.Parent = sliderFill
 
                     local sliderButton = Instance.new("TextButton")
                     sliderButton.Size = UDim2.new(1, 0, 1, 0)
@@ -1218,6 +1455,7 @@ function Library:CreateLib(name, theme)
 
                 tabData.YPosition = currentY + 50
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
+                return dropdownRef
             end
 
             function SectionObject:NewTextBlock(text)
@@ -1228,17 +1466,21 @@ function Library:CreateLib(name, theme)
                 local textFrame = Instance.new("Frame")
                 textFrame.Size = UDim2.new(1, 0, 0, height)
                 textFrame.Position = UDim2.new(0, 0, 0, currentY)
-                textFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                textFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 textFrame.BorderSizePixel = 1
-                textFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                textFrame.BorderColor3 = CurrentColor
                 textFrame.Parent = container
+
+                local frameCorner = Instance.new("UICorner")
+                frameCorner.CornerRadius = UDim.new(0, 4)
+                frameCorner.Parent = textFrame
 
                 local textLabel = Instance.new("TextLabel")
                 textLabel.Size = UDim2.new(1, -20, 1, -20)
                 textLabel.Position = UDim2.new(0, 10, 0, 10)
                 textLabel.BackgroundTransparency = 1
                 textLabel.Text = text or ""
-                textLabel.TextColor3 = CurrentColor -- Цветной текст
+                textLabel.TextColor3 = CurrentColor
                 textLabel.TextSize = 14
                 textLabel.Font = Enum.Font.Code
                 textLabel.TextWrapped = true
@@ -1248,6 +1490,7 @@ function Library:CreateLib(name, theme)
 
                 tabData.YPosition = currentY + height + 10
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
+                return textFrame
             end
 
             function SectionObject:NewTextInput(inputName, description, callback)
@@ -1256,17 +1499,21 @@ function Library:CreateLib(name, theme)
                 local inputFrame = Instance.new("Frame")
                 inputFrame.Size = UDim2.new(1, 0, 0, 85)
                 inputFrame.Position = UDim2.new(0, 0, 0, currentY)
-                inputFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                inputFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 inputFrame.BorderSizePixel = 1
-                inputFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                inputFrame.BorderColor3 = CurrentColor
                 inputFrame.Parent = container
+
+                local frameCorner = Instance.new("UICorner")
+                frameCorner.CornerRadius = UDim.new(0, 4)
+                frameCorner.Parent = inputFrame
 
                 local nameLabel = Instance.new("TextLabel")
                 nameLabel.Size = UDim2.new(1, -20, 0, 20)
                 nameLabel.Position = UDim2.new(0, 10, 0, 8)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = inputName
-                nameLabel.TextColor3 = CurrentColor -- Цветной текст
+                nameLabel.TextColor3 = CurrentColor
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1287,18 +1534,22 @@ function Library:CreateLib(name, theme)
                 local textBox = Instance.new("TextBox")
                 textBox.Size = UDim2.new(1, -20, 0, 30)
                 textBox.Position = UDim2.new(0, 10, 0, 48)
-                textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 textBox.BorderSizePixel = 1
-                textBox.BorderColor3 = CurrentColor -- Цветная обводка
+                textBox.BorderColor3 = CurrentColor
                 textBox.Text = ""
                 textBox.PlaceholderText = "Enter text..."
                 textBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-                textBox.TextColor3 = CurrentColor -- Цветной текст
+                textBox.TextColor3 = CurrentColor
                 textBox.TextSize = 14
                 textBox.Font = Enum.Font.Code
                 textBox.TextXAlignment = Enum.TextXAlignment.Left
                 textBox.ClearTextOnFocus = false
                 textBox.Parent = inputFrame
+
+                local tbCorner = Instance.new("UICorner")
+                tbCorner.CornerRadius = UDim.new(0, 4)
+                tbCorner.Parent = textBox
 
                 textBox.FocusLost:Connect(function(enterPressed)
                     if enterPressed and callback then
@@ -1317,6 +1568,7 @@ function Library:CreateLib(name, theme)
 
                 tabData.YPosition = currentY + 95
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
+                return inputFrame
             end
 
             function SectionObject:NewInputToggle(inputName, description, callback)
@@ -1326,17 +1578,21 @@ function Library:CreateLib(name, theme)
                 local inputToggleFrame = Instance.new("Frame")
                 inputToggleFrame.Size = UDim2.new(1, 0, 0, 85)
                 inputToggleFrame.Position = UDim2.new(0, 0, 0, currentY)
-                inputToggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                inputToggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 inputToggleFrame.BorderSizePixel = 1
-                inputToggleFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                inputToggleFrame.BorderColor3 = CurrentColor
                 inputToggleFrame.Parent = container
+
+                local frameCorner = Instance.new("UICorner")
+                frameCorner.CornerRadius = UDim.new(0, 4)
+                frameCorner.Parent = inputToggleFrame
 
                 local nameLabel = Instance.new("TextLabel")
                 nameLabel.Size = UDim2.new(1, -80, 0, 20)
                 nameLabel.Position = UDim2.new(0, 10, 0, 8)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = inputName
-                nameLabel.TextColor3 = CurrentColor -- Цветной текст
+                nameLabel.TextColor3 = CurrentColor
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1358,27 +1614,35 @@ function Library:CreateLib(name, theme)
                 toggleBg.Position = UDim2.new(1, -60, 0, 6)
                 toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 toggleBg.BorderSizePixel = 1
-                toggleBg.BorderColor3 = CurrentColor -- Цветная обводка
+                toggleBg.BorderColor3 = CurrentColor
                 toggleBg.Parent = inputToggleFrame
+
+                local bgCorner = Instance.new("UICorner")
+                bgCorner.CornerRadius = UDim.new(0, 12)
+                bgCorner.Parent = toggleBg
 
                 local toggleIndicator = Instance.new("Frame")
                 toggleIndicator.Size = UDim2.new(0, 20, 0, 16)
                 toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                 toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
                 toggleIndicator.BorderSizePixel = 1
-                toggleIndicator.BorderColor3 = CurrentColor -- Цветная обводка
+                toggleIndicator.BorderColor3 = CurrentColor
                 toggleIndicator.Parent = toggleBg
+
+                local indicatorCorner = Instance.new("UICorner")
+                indicatorCorner.CornerRadius = UDim.new(0, 8)
+                indicatorCorner.Parent = toggleIndicator
 
                 local textBox = Instance.new("TextBox")
                 textBox.Size = UDim2.new(1, -20, 0, 30)
                 textBox.Position = UDim2.new(0, 10, 0, 48)
-                textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 textBox.BorderSizePixel = 1
-                textBox.BorderColor3 = CurrentColor -- Цветная обводка
+                textBox.BorderColor3 = CurrentColor
                 textBox.Text = ""
                 textBox.PlaceholderText = "Enter text..."
                 textBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-                textBox.TextColor3 = CurrentColor -- Цветной текст
+                textBox.TextColor3 = CurrentColor
                 textBox.TextSize = 14
                 textBox.Font = Enum.Font.Code
                 textBox.TextXAlignment = Enum.TextXAlignment.Left
@@ -1386,16 +1650,18 @@ function Library:CreateLib(name, theme)
                 textBox.TextEditable = true
                 textBox.Parent = inputToggleFrame
 
+                local tbCorner = Instance.new("UICorner")
+                tbCorner.CornerRadius = UDim.new(0, 4)
+                tbCorner.Parent = textBox
+
                 local toggleState = false
                 InputToggleStates[inputToggleId] = {state = false, text = ""}
 
                 local function updateToggle()
                     if toggleState then
-                        toggleIndicator.BackgroundColor3 = CurrentColor -- Цветной индикатор
-                        toggleIndicator.Position = UDim2.new(1, -22, 0.5, -8)
+                        TweenService:Create(toggleIndicator, TweenInfo.new(0.2), {BackgroundColor3 = CurrentColor, Position = UDim2.new(1, -22, 0.5, -8)}):Play()
                     else
-                        toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-                        toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
+                        TweenService:Create(toggleIndicator, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(100, 100, 100), Position = UDim2.new(0, 2, 0.5, -8)}):Play()
                     end
                 end
 
@@ -1429,6 +1695,7 @@ function Library:CreateLib(name, theme)
 
                 tabData.YPosition = currentY + 95
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
+                return inputToggleFrame
             end
 
             function SectionObject:NewChat(chatName, description)
@@ -1437,17 +1704,21 @@ function Library:CreateLib(name, theme)
                 local chatFrame = Instance.new("Frame")
                 chatFrame.Size = UDim2.new(1, 0, 0, 300)
                 chatFrame.Position = UDim2.new(0, 0, 0, currentY)
-                chatFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                chatFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 chatFrame.BorderSizePixel = 1
-                chatFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                chatFrame.BorderColor3 = CurrentColor
                 chatFrame.Parent = container
+
+                local frameCorner = Instance.new("UICorner")
+                frameCorner.CornerRadius = UDim.new(0, 4)
+                frameCorner.Parent = chatFrame
 
                 local nameLabel = Instance.new("TextLabel")
                 nameLabel.Size = UDim2.new(1, -20, 0, 20)
                 nameLabel.Position = UDim2.new(0, 10, 0, 8)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = chatName
-                nameLabel.TextColor3 = CurrentColor -- Цветной текст
+                nameLabel.TextColor3 = CurrentColor
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1469,10 +1740,10 @@ function Library:CreateLib(name, theme)
                 messagesFrame.Position = UDim2.new(0, 10, 0, 48)
                 messagesFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
                 messagesFrame.BorderSizePixel = 1
-                messagesFrame.BorderColor3 = CurrentColor -- Цветная обводка
+                messagesFrame.BorderColor3 = CurrentColor
                 messagesFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
                 messagesFrame.ScrollBarThickness = 6
-                messagesFrame.ScrollBarImageColor3 = CurrentColor -- Цветной скроллбар
+                messagesFrame.ScrollBarImageColor3 = CurrentColor
                 messagesFrame.Parent = chatFrame
 
                 local messagesList = Instance.new("UIListLayout")
@@ -1491,45 +1762,57 @@ function Library:CreateLib(name, theme)
                 local nickBox = Instance.new("TextBox")
                 nickBox.Size = UDim2.new(0.25, -5, 0, 26)
                 nickBox.Position = UDim2.new(0, 10, 0, 225)
-                nickBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                nickBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 nickBox.BorderSizePixel = 1
-                nickBox.BorderColor3 = CurrentColor -- Цветная обводка
+                nickBox.BorderColor3 = CurrentColor
                 nickBox.Text = ""
                 nickBox.PlaceholderText = "Nickname"
                 nickBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-                nickBox.TextColor3 = CurrentColor -- Цветной текст
+                nickBox.TextColor3 = CurrentColor
                 nickBox.TextSize = 14
                 nickBox.Font = Enum.Font.Code
                 nickBox.TextXAlignment = Enum.TextXAlignment.Left
                 nickBox.ClearTextOnFocus = false
                 nickBox.Parent = chatFrame
 
+                local nbCorner = Instance.new("UICorner")
+                nbCorner.CornerRadius = UDim.new(0, 4)
+                nbCorner.Parent = nickBox
+
                 local messageBox = Instance.new("TextBox")
                 messageBox.Size = UDim2.new(0.55, -10, 0, 26)
                 messageBox.Position = UDim2.new(0.25, 15, 0, 225)
-                messageBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+                messageBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 messageBox.BorderSizePixel = 1
-                messageBox.BorderColor3 = CurrentColor -- Цветная обводка
+                messageBox.BorderColor3 = CurrentColor
                 messageBox.Text = ""
                 messageBox.PlaceholderText = "Message"
                 messageBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-                messageBox.TextColor3 = CurrentColor -- Цветной текст
+                messageBox.TextColor3 = CurrentColor
                 messageBox.TextSize = 14
                 messageBox.Font = Enum.Font.Code
                 messageBox.TextXAlignment = Enum.TextXAlignment.Left
                 messageBox.ClearTextOnFocus = false
                 messageBox.Parent = chatFrame
 
+                local mbCorner = Instance.new("UICorner")
+                mbCorner.CornerRadius = UDim.new(0, 4)
+                mbCorner.Parent = messageBox
+
                 local sendButton = Instance.new("TextButton")
                 sendButton.Size = UDim2.new(0.2, -10, 0, 26)
                 sendButton.Position = UDim2.new(0.8, 10, 0, 225)
-                sendButton.BackgroundColor3 = CurrentColor -- Цветной фон для кнопки SEND
+                sendButton.BackgroundColor3 = CurrentColor
                 sendButton.BorderSizePixel = 0
                 sendButton.Text = "SEND"
-                sendButton.TextColor3 = Color3.fromRGB(0, 0, 0) -- Черный текст на цветном фоне
+                sendButton.TextColor3 = Color3.fromRGB(0, 0, 0)
                 sendButton.TextSize = 14
                 sendButton.Font = Enum.Font.Code
                 sendButton.Parent = chatFrame
+
+                local sbCorner = Instance.new("UICorner")
+                sbCorner.CornerRadius = UDim.new(0, 4)
+                sbCorner.Parent = sendButton
 
                 local messages = {}
 
@@ -1611,6 +1894,7 @@ function Library:CreateLib(name, theme)
 
                 tabData.YPosition = currentY + 310
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
+                return chatFrame
             end
 
             return SectionObject

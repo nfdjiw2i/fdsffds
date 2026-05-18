@@ -58,7 +58,7 @@ function Library:CreateLib(name, theme)
     mainFrame.Name = "MainFrame"
     mainFrame.Size = UDim2.new(0, 600, 0, 400)
     mainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Всегда черный фон
     mainFrame.BorderSizePixel = 0
     mainFrame.Parent = screenGui
     mainFrame.Active = true
@@ -69,11 +69,11 @@ function Library:CreateLib(name, theme)
     minBtnFrame.Name = "MinBtn"
     minBtnFrame.Size = UDim2.new(0, 40, 0, 40)
     minBtnFrame.Position = UDim2.new(0.5, -20, 0.5, -20)
-    minBtnFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    minBtnFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
     minBtnFrame.BorderSizePixel = 1
-    minBtnFrame.BorderColor3 = Color3.fromRGB(100, 100, 100)
+    minBtnFrame.BorderColor3 = CurrentColor -- Цветная обводка
     minBtnFrame.Text = name:sub(1, 1)
-    minBtnFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
+    minBtnFrame.TextColor3 = CurrentColor -- Цветной текст
     minBtnFrame.TextSize = 20
     minBtnFrame.Font = Enum.Font.Code
     minBtnFrame.Parent = screenGui
@@ -97,30 +97,30 @@ function Library:CreateLib(name, theme)
     local topBar = Instance.new("Frame")
     topBar.Name = "TopBar"
     topBar.Size = UDim2.new(1, 0, 0, 30)
-    topBar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
     topBar.BorderSizePixel = 0
     topBar.Parent = mainFrame
 
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -130, 1, 0)
+    titleLabel.Size = UDim2.new(1, -130, 0, 0)
     titleLabel.Position = UDim2.new(0, 10, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = name
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.TextColor3 = CurrentColor -- Цветной текст
     titleLabel.TextSize = 14
     titleLabel.Font = Enum.Font.Code
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
-    -- Кнопка настроек (серый квадрат)
+    -- Кнопка настроек (черный фон, цветная обводка)
     local settingsBtn = Instance.new("TextButton")
     settingsBtn.Size = UDim2.new(0, 26, 0, 26)
     settingsBtn.Position = UDim2.new(1, -112, 0, 2)
-    settingsBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    settingsBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
     settingsBtn.BorderSizePixel = 1
-    settingsBtn.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    settingsBtn.BorderColor3 = CurrentColor -- Цветная обводка
     settingsBtn.Text = "⚙"
-    settingsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    settingsBtn.TextColor3 = CurrentColor -- Цветной текст
     settingsBtn.TextSize = 16
     settingsBtn.Font = Enum.Font.Code
     settingsBtn.Parent = topBar
@@ -128,11 +128,11 @@ function Library:CreateLib(name, theme)
     local minimizeBtn = Instance.new("TextButton")
     minimizeBtn.Size = UDim2.new(0, 26, 0, 26)
     minimizeBtn.Position = UDim2.new(1, -84, 0, 2)
-    minimizeBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    minimizeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
     minimizeBtn.BorderSizePixel = 1
-    minimizeBtn.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    minimizeBtn.BorderColor3 = CurrentColor -- Цветная обводка
     minimizeBtn.Text = "-"
-    minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    minimizeBtn.TextColor3 = CurrentColor -- Цветной текст
     minimizeBtn.TextSize = 18
     minimizeBtn.Font = Enum.Font.Code
     minimizeBtn.Parent = topBar
@@ -140,11 +140,11 @@ function Library:CreateLib(name, theme)
     local hideBtn = Instance.new("TextButton")
     hideBtn.Size = UDim2.new(0, 26, 0, 26)
     hideBtn.Position = UDim2.new(1, -56, 0, 2)
-    hideBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    hideBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
     hideBtn.BorderSizePixel = 1
-    hideBtn.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    hideBtn.BorderColor3 = CurrentColor -- Цветная обводка
     hideBtn.Text = "+"
-    hideBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    hideBtn.TextColor3 = CurrentColor -- Цветной текст
     hideBtn.TextSize = 18
     hideBtn.Font = Enum.Font.Code
     hideBtn.Parent = topBar
@@ -152,11 +152,11 @@ function Library:CreateLib(name, theme)
     local closeButton = Instance.new("TextButton")
     closeButton.Size = UDim2.new(0, 26, 0, 26)
     closeButton.Position = UDim2.new(1, -28, 0, 2)
-    closeButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    closeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
     closeButton.BorderSizePixel = 1
-    closeButton.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    closeButton.BorderColor3 = Color3.fromRGB(255, 80, 80) -- Красная обводка для кнопки закрытия
     closeButton.Text = "X"
-    closeButton.TextColor3 = Color3.fromRGB(255, 80, 80)
+    closeButton.TextColor3 = Color3.fromRGB(255, 80, 80) -- Красный текст для кнопки закрытия
     closeButton.TextSize = 14
     closeButton.Font = Enum.Font.Code
     closeButton.Parent = topBar
@@ -165,9 +165,9 @@ function Library:CreateLib(name, theme)
     local settingsFrame = Instance.new("Frame")
     settingsFrame.Size = UDim2.new(0, 260, 0, 270)
     settingsFrame.Position = UDim2.new(1, -270, 0, 35)
-    settingsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    settingsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
     settingsFrame.BorderSizePixel = 1
-    settingsFrame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    settingsFrame.BorderColor3 = CurrentColor -- Цветная обводка
     settingsFrame.Visible = false
     settingsFrame.ZIndex = 150
     settingsFrame.Parent = mainFrame
@@ -181,16 +181,29 @@ function Library:CreateLib(name, theme)
             UIElements.ActiveLine.BackgroundColor3 = CurrentColor
         end
         for _, obj in pairs(mainFrame:GetDescendants()) do
-            if obj:IsA("Frame") and obj.BorderSizePixel > 0 then
-                obj.BorderColor3 = CurrentColor
+            if obj:IsA("Frame") and obj.BorderSizePixel > 0 and obj ~= closeButton then
+                obj.BorderColor3 = CurrentColor -- Цветная обводка для всех рамок
+            end
+            if obj:IsA("TextButton") and obj.BackgroundColor3 == Color3.fromRGB(0, 0, 0) then
+                obj.BorderColor3 = CurrentColor -- Цветная обводка для кнопок
+                if obj.TextColor3 ~= Color3.fromRGB(255, 80, 80) then -- Кроме кнопки закрытия
+                    obj.TextColor3 = CurrentColor -- Цветной текст
+                end
+            end
+            if obj:IsA("TextLabel") and obj.BackgroundTransparency == 1 then
+                obj.TextColor3 = CurrentColor -- Цветной текст для заголовков
             end
             if obj.Name == "sliderFill" or obj.Name == "toggleIndicator" then
-                obj.BackgroundColor3 = CurrentColor
+                obj.BackgroundColor3 = CurrentColor -- Цветные индикаторы
             end
-            if (obj.Name == "valueLabel" or obj.Name == "nameLabel") and obj.TextColor3 == Color3.fromRGB(255,255,255) or obj.TextColor3 == Color3.fromRGB(230,230,230) then
-                obj.TextColor3 = CurrentColor
+            if obj.Name == "valueLabel" or obj.Name == "nameLabel" then
+                obj.TextColor3 = CurrentColor -- Цветной текст
             end
         end
+        -- Обновляем цвет текста в topBar
+        titleLabel.TextColor3 = CurrentColor
+        minBtnFrame.BorderColor3 = CurrentColor
+        minBtnFrame.TextColor3 = CurrentColor
     end
 
     local colorTitle = Instance.new("TextLabel")
@@ -198,7 +211,7 @@ function Library:CreateLib(name, theme)
     colorTitle.Position = UDim2.new(0, 10, 0, 10)
     colorTitle.BackgroundTransparency = 1
     colorTitle.Text = "Menu Color:"
-    colorTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    colorTitle.TextColor3 = CurrentColor -- Цветной текст
     colorTitle.TextSize = 14
     colorTitle.Font = Enum.Font.Code
     colorTitle.Parent = settingsFrame
@@ -206,9 +219,11 @@ function Library:CreateLib(name, theme)
     local function createColorButton(text, color)
         local btn = Instance.new("TextButton")
         btn.Size = UDim2.new(1, -20, 0, 32)
-        btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+        btn.BorderSizePixel = 1
+        btn.BorderColor3 = color -- Цветная обводка
         btn.Text = text
-        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.TextColor3 = color -- Цветной текст
         btn.TextSize = 14
         btn.Font = Enum.Font.Code
         btn.Parent = settingsFrame
@@ -222,7 +237,7 @@ function Library:CreateLib(name, theme)
     end
 
     createColorButton("Black & White", Color3.fromRGB(255, 255, 255)).Position = UDim2.new(0, 10, 0, 40)
-    createColorButton("Black & Gray", Color3.fromRGB(180, 180, 180)).Position = UDim2.new(0, 10, 0, 77)
+    createColorButton("Dark Gray & Black", Color3.fromRGB(100, 100, 100)).Position = UDim2.new(0, 10, 0, 77)
     createColorButton("Orange & Black", Color3.fromRGB(255, 140, 0)).Position = UDim2.new(0, 10, 0, 114)
     createColorButton("Purple & Black", Color3.fromRGB(180, 0, 255)).Position = UDim2.new(0, 10, 0, 151)
 
@@ -231,7 +246,7 @@ function Library:CreateLib(name, theme)
     transTitle.Position = UDim2.new(0, 10, 0, 195)
     transTitle.BackgroundTransparency = 1
     transTitle.Text = "Menu Transparency:"
-    transTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+    transTitle.TextColor3 = CurrentColor -- Цветной текст
     transTitle.TextSize = 13
     transTitle.Font = Enum.Font.Code
     transTitle.Parent = settingsFrame
@@ -244,16 +259,16 @@ function Library:CreateLib(name, theme)
 
     local transFill = Instance.new("Frame")
     transFill.Size = UDim2.new(1, 0, 1, 0)
-    transFill.BackgroundColor3 = CurrentColor
+    transFill.BackgroundColor3 = CurrentColor -- Цветной индикатор
     transFill.Parent = transBg
 
     local transBox = Instance.new("TextBox")
     transBox.Size = UDim2.new(0, 50, 0, 20)
     transBox.Position = UDim2.new(1, -60, 0, 195)
-    transBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    transBox.BorderColor3 = CurrentColor
+    transBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+    transBox.BorderColor3 = CurrentColor -- Цветная обводка
     transBox.Text = "1.00"
-    transBox.TextColor3 = CurrentColor
+    transBox.TextColor3 = CurrentColor -- Цветной текст
     transBox.TextSize = 13
     transBox.Font = Enum.Font.Code
     transBox.Parent = settingsFrame
@@ -348,7 +363,7 @@ function Library:CreateLib(name, theme)
         mainFrame.Draggable = false
         startMousePos = UserInputService:GetMouseLocation()
         startFrameSize = mainFrame.AbsoluteSize
-        resizeHandle.BackgroundColor3 = CurrentColor
+        resizeHandle.BackgroundColor3 = CurrentColor -- Цветной индикатор при ресайзе
     end)
     
     UserInputService.InputChanged:Connect(function(input)
@@ -377,7 +392,7 @@ function Library:CreateLib(name, theme)
     tabContainer.Name = "TabContainer"
     tabContainer.Size = UDim2.new(1, 0, 0, 35)
     tabContainer.Position = UDim2.new(0, 0, 0, 30)
-    tabContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    tabContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
     tabContainer.BorderSizePixel = 0
     tabContainer.Parent = mainFrame
 
@@ -416,12 +431,13 @@ function Library:CreateLib(name, theme)
         local tabButton = Instance.new("TextButton")
         tabButton.Name = "TabButton_" .. tabCount
         tabButton.Size = UDim2.new(0, 100, 1, -6)
-        tabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        tabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
+        tabButton.BorderSizePixel = 1
+        tabButton.BorderColor3 = CurrentColor -- Цветная обводка
         tabButton.Text = name
-        tabButton.TextColor3 = (tabCount == 1) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(140, 140, 140)
+        tabButton.TextColor3 = (tabCount == 1) and CurrentColor or Color3.fromRGB(140, 140, 140) -- Цветной текст для активной вкладки
         tabButton.TextSize = 14
         tabButton.Font = Enum.Font.Code
-        tabButton.BorderSizePixel = 0
         tabButton.Parent = tabContainer
 
         table.insert(TabButtons, tabButton)
@@ -434,7 +450,7 @@ function Library:CreateLib(name, theme)
         section.BorderSizePixel = 0
         section.CanvasSize = UDim2.new(0, 0, 0, 0)
         section.ScrollBarThickness = 8
-        section.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80)
+        section.ScrollBarImageColor3 = CurrentColor -- Цветной скроллбар
         section.Parent = ColumnsFrame
         section.Visible = (tabCount == 1)
 
@@ -463,7 +479,7 @@ function Library:CreateLib(name, theme)
             local line = Instance.new("Frame")
             line.Size = UDim2.new(1, 0, 0, 2)
             line.Position = UDim2.new(0, 0, 1, -2)
-            line.BackgroundColor3 = CurrentColor
+            line.BackgroundColor3 = CurrentColor -- Цветная линия
             line.BorderSizePixel = 0
             line.Parent = tabButton
             UIElements.ActiveLine = line
@@ -474,7 +490,7 @@ function Library:CreateLib(name, theme)
             for _, btn in ipairs(TabButtons) do
                 btn.TextColor3 = Color3.fromRGB(140, 140, 140)
             end
-            tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            tabButton.TextColor3 = CurrentColor -- Цветной текст для активной вкладки
 
             if UIElements.ActiveLine then
                 UIElements.ActiveLine:Destroy()
@@ -483,7 +499,7 @@ function Library:CreateLib(name, theme)
             local line = Instance.new("Frame")
             line.Size = UDim2.new(1, 0, 0, 2)
             line.Position = UDim2.new(0, 0, 1, -2)
-            line.BackgroundColor3 = CurrentColor
+            line.BackgroundColor3 = CurrentColor -- Цветная линия
             line.BorderSizePixel = 0
             line.Parent = tabButton
             UIElements.ActiveLine = line
@@ -510,7 +526,7 @@ function Library:CreateLib(name, theme)
             sectionTitle.Position = UDim2.new(0, 0, 0, yPos)
             sectionTitle.BackgroundTransparency = 1
             sectionTitle.Text = "// " .. sectionName
-            sectionTitle.TextColor3 = Color3.fromRGB(230, 230, 230)
+            sectionTitle.TextColor3 = CurrentColor -- Цветной текст
             sectionTitle.TextSize = 16
             sectionTitle.Font = Enum.Font.Code
             sectionTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -519,7 +535,7 @@ function Library:CreateLib(name, theme)
             local sectionLine = Instance.new("Frame")
             sectionLine.Size = UDim2.new(1, 0, 0, 1)
             sectionLine.Position = UDim2.new(0, 0, 0, yPos + 28)
-            sectionLine.BackgroundColor3 = CurrentColor
+            sectionLine.BackgroundColor3 = CurrentColor -- Цветная линия
             sectionLine.BorderSizePixel = 0
             sectionLine.Parent = container
 
@@ -551,9 +567,9 @@ function Library:CreateLib(name, theme)
                 local buttonFrame = Instance.new("Frame")
                 buttonFrame.Size = UDim2.new(1, 0, 0, 60)
                 buttonFrame.Position = UDim2.new(0, 0, 0, currentY)
-                buttonFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+                buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 buttonFrame.BorderSizePixel = 1
-                buttonFrame.BorderColor3 = CurrentColor
+                buttonFrame.BorderColor3 = CurrentColor -- Цветная обводка
                 buttonFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -561,7 +577,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = buttonName
-                nameLabel.TextColor3 = CurrentColor
+                nameLabel.TextColor3 = CurrentColor -- Цветной текст
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -588,12 +604,12 @@ function Library:CreateLib(name, theme)
                     buttonFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
                 end)
                 button.MouseLeave:Connect(function()
-                    buttonFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+                    buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                 end)
                 button.MouseButton1Click:Connect(function()
                     buttonFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
                     task.wait(0.1)
-                    buttonFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+                    buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                     if callback then
                         local success, err = pcall(callback)
                         if not success then
@@ -613,9 +629,9 @@ function Library:CreateLib(name, theme)
                 local toggleFrame = Instance.new("Frame")
                 toggleFrame.Size = UDim2.new(1, 0, 0, 50)
                 toggleFrame.Position = UDim2.new(0, 0, 0, currentY)
-                toggleFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+                toggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 toggleFrame.BorderSizePixel = 1
-                toggleFrame.BorderColor3 = CurrentColor
+                toggleFrame.BorderColor3 = CurrentColor -- Цветная обводка
                 toggleFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -623,7 +639,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = toggleName
-                nameLabel.TextColor3 = CurrentColor
+                nameLabel.TextColor3 = CurrentColor -- Цветной текст
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -645,7 +661,7 @@ function Library:CreateLib(name, theme)
                 toggleBg.Position = UDim2.new(1, -60, 0.5, -12)
                 toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 toggleBg.BorderSizePixel = 1
-                toggleBg.BorderColor3 = CurrentColor
+                toggleBg.BorderColor3 = CurrentColor -- Цветная обводка
                 toggleBg.Parent = toggleFrame
 
                 local toggleIndicator = Instance.new("Frame")
@@ -653,7 +669,7 @@ function Library:CreateLib(name, theme)
                 toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                 toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
                 toggleIndicator.BorderSizePixel = 1
-                toggleIndicator.BorderColor3 = CurrentColor
+                toggleIndicator.BorderColor3 = CurrentColor -- Цветная обводка
                 toggleIndicator.Parent = toggleBg
 
                 local toggleState = false
@@ -661,7 +677,7 @@ function Library:CreateLib(name, theme)
 
                 local function updateToggle()
                     if toggleState then
-                        toggleIndicator.BackgroundColor3 = CurrentColor
+                        toggleIndicator.BackgroundColor3 = CurrentColor -- Цветной индикатор
                         toggleIndicator.Position = UDim2.new(1, -22, 0.5, -8)
                     else
                         toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
@@ -704,9 +720,9 @@ function Library:CreateLib(name, theme)
                 local sliderFrame = Instance.new("Frame")
                 sliderFrame.Size = UDim2.new(1, 0, 0, 70)
                 sliderFrame.Position = UDim2.new(0, 0, 0, currentY)
-                sliderFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+                sliderFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 sliderFrame.BorderSizePixel = 1
-                sliderFrame.BorderColor3 = CurrentColor
+                sliderFrame.BorderColor3 = CurrentColor -- Цветная обводка
                 sliderFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -714,7 +730,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = sliderName
-                nameLabel.TextColor3 = CurrentColor
+                nameLabel.TextColor3 = CurrentColor -- Цветной текст
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -734,11 +750,11 @@ function Library:CreateLib(name, theme)
                 local valueLabel = Instance.new("TextLabel")
                 valueLabel.Size = UDim2.new(0, 50, 0, 20)
                 valueLabel.Position = UDim2.new(1, -60, 0, 28)
-                valueLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                valueLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 valueLabel.BorderSizePixel = 1
-                valueLabel.BorderColor3 = CurrentColor
+                valueLabel.BorderColor3 = CurrentColor -- Цветная обводка
                 valueLabel.Text = tostring(default or min)
-                valueLabel.TextColor3 = CurrentColor
+                valueLabel.TextColor3 = CurrentColor -- Цветной текст
                 valueLabel.TextSize = 12
                 valueLabel.Font = Enum.Font.Code
                 valueLabel.Parent = sliderFrame
@@ -748,12 +764,12 @@ function Library:CreateLib(name, theme)
                 sliderBg.Position = UDim2.new(0, 10, 0, 50)
                 sliderBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 sliderBg.BorderSizePixel = 1
-                sliderBg.BorderColor3 = CurrentColor
+                sliderBg.BorderColor3 = CurrentColor -- Цветная обводка
                 sliderBg.Parent = sliderFrame
 
                 local sliderFill = Instance.new("Frame")
                 sliderFill.Size = UDim2.new(0, 0, 1, 0)
-                sliderFill.BackgroundColor3 = CurrentColor
+                sliderFill.BackgroundColor3 = CurrentColor -- Цветной индикатор
                 sliderFill.BorderSizePixel = 0
                 sliderFill.Parent = sliderBg
 
@@ -835,9 +851,9 @@ function Library:CreateLib(name, theme)
                 dropdownFrame = Instance.new("Frame")
                 dropdownFrame.Size = UDim2.new(1, 0, 0, 50)
                 dropdownFrame.Position = UDim2.new(0, 0, 0, currentY)
-                dropdownFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+                dropdownFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 dropdownFrame.BorderSizePixel = 1
-                dropdownFrame.BorderColor3 = CurrentColor
+                dropdownFrame.BorderColor3 = CurrentColor -- Цветная обводка
                 dropdownFrame.Parent = container
                 dropdownFrame.ClipsDescendants = true
 
@@ -853,7 +869,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = dropdownName
-                nameLabel.TextColor3 = CurrentColor
+                nameLabel.TextColor3 = CurrentColor -- Цветной текст
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -875,7 +891,7 @@ function Library:CreateLib(name, theme)
                 arrowLabel.Position = UDim2.new(1, -40, 0, 10)
                 arrowLabel.BackgroundTransparency = 1
                 arrowLabel.Text = "▼"
-                arrowLabel.TextColor3 = Color3.fromRGB(140, 140, 140)
+                arrowLabel.TextColor3 = CurrentColor -- Цветной текст
                 arrowLabel.TextSize = 20
                 arrowLabel.Font = Enum.Font.Code
                 arrowLabel.Parent = dropdownFrame
@@ -918,9 +934,9 @@ function Library:CreateLib(name, theme)
                     local buttonFrame = Instance.new("Frame")
                     buttonFrame.Size = UDim2.new(1, -20, 0, 40)
                     buttonFrame.Position = UDim2.new(0, 10, 0, btnY)
-                    buttonFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+                    buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                     buttonFrame.BorderSizePixel = 1
-                    buttonFrame.BorderColor3 = CurrentColor
+                    buttonFrame.BorderColor3 = CurrentColor -- Цветная обводка
                     buttonFrame.Parent = dropdownRef.content
 
                     local nameLabel = Instance.new("TextLabel")
@@ -928,7 +944,7 @@ function Library:CreateLib(name, theme)
                     nameLabel.Position = UDim2.new(0, 10, 0, 0)
                     nameLabel.BackgroundTransparency = 1
                     nameLabel.Text = buttonName
-                    nameLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+                    nameLabel.TextColor3 = CurrentColor -- Цветной текст
                     nameLabel.TextSize = 14
                     nameLabel.Font = Enum.Font.Code
                     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -944,12 +960,12 @@ function Library:CreateLib(name, theme)
                         buttonFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                     end)
                     button.MouseLeave:Connect(function()
-                        buttonFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+                        buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                     end)
                     button.MouseButton1Click:Connect(function()
                         buttonFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
                         task.wait(0.1)
-                        buttonFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+                        buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
                         if callback then
                             local success, err = pcall(callback)
                             if not success then
@@ -973,9 +989,9 @@ function Library:CreateLib(name, theme)
                     local toggleFrame = Instance.new("Frame")
                     toggleFrame.Size = UDim2.new(1, -20, 0, 50)
                     toggleFrame.Position = UDim2.new(0, 10, 0, btnY)
-                    toggleFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+                    toggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                     toggleFrame.BorderSizePixel = 1
-                    toggleFrame.BorderColor3 = CurrentColor
+                    toggleFrame.BorderColor3 = CurrentColor -- Цветная обводка
                     toggleFrame.Parent = dropdownRef.content
 
                     local nameLabel = Instance.new("TextLabel")
@@ -983,7 +999,7 @@ function Library:CreateLib(name, theme)
                     nameLabel.Position = UDim2.new(0, 10, 0, 5)
                     nameLabel.BackgroundTransparency = 1
                     nameLabel.Text = toggleName
-                    nameLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+                    nameLabel.TextColor3 = CurrentColor -- Цветной текст
                     nameLabel.TextSize = 14
                     nameLabel.Font = Enum.Font.Code
                     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1005,7 +1021,7 @@ function Library:CreateLib(name, theme)
                     toggleBg.Position = UDim2.new(1, -60, 0.5, -12)
                     toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                     toggleBg.BorderSizePixel = 1
-                    toggleBg.BorderColor3 = CurrentColor
+                    toggleBg.BorderColor3 = CurrentColor -- Цветная обводка
                     toggleBg.Parent = toggleFrame
 
                     local toggleIndicator = Instance.new("Frame")
@@ -1013,7 +1029,7 @@ function Library:CreateLib(name, theme)
                     toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                     toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
                     toggleIndicator.BorderSizePixel = 1
-                    toggleIndicator.BorderColor3 = CurrentColor
+                    toggleIndicator.BorderColor3 = CurrentColor -- Цветная обводка
                     toggleIndicator.Parent = toggleBg
 
                     local toggleState = false
@@ -1021,7 +1037,7 @@ function Library:CreateLib(name, theme)
 
                     local function updateToggle()
                         if toggleState then
-                            toggleIndicator.BackgroundColor3 = CurrentColor
+                            toggleIndicator.BackgroundColor3 = CurrentColor -- Цветной индикатор
                             toggleIndicator.Position = UDim2.new(1, -22, 0.5, -8)
                         else
                             toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
@@ -1064,9 +1080,9 @@ function Library:CreateLib(name, theme)
                     local sliderFrame = Instance.new("Frame")
                     sliderFrame.Size = UDim2.new(1, -20, 0, 70)
                     sliderFrame.Position = UDim2.new(0, 10, 0, btnY)
-                    sliderFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+                    sliderFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                     sliderFrame.BorderSizePixel = 1
-                    sliderFrame.BorderColor3 = CurrentColor
+                    sliderFrame.BorderColor3 = CurrentColor -- Цветная обводка
                     sliderFrame.Parent = dropdownRef.content
 
                     local nameLabel = Instance.new("TextLabel")
@@ -1074,7 +1090,7 @@ function Library:CreateLib(name, theme)
                     nameLabel.Position = UDim2.new(0, 10, 0, 5)
                     nameLabel.BackgroundTransparency = 1
                     nameLabel.Text = sliderName
-                    nameLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+                    nameLabel.TextColor3 = CurrentColor -- Цветной текст
                     nameLabel.TextSize = 14
                     nameLabel.Font = Enum.Font.Code
                     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1094,11 +1110,11 @@ function Library:CreateLib(name, theme)
                     local valueLabel = Instance.new("TextLabel")
                     valueLabel.Size = UDim2.new(0, 50, 0, 20)
                     valueLabel.Position = UDim2.new(1, -60, 0, 28)
-                    valueLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                    valueLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                     valueLabel.BorderSizePixel = 1
-                    valueLabel.BorderColor3 = CurrentColor
+                    valueLabel.BorderColor3 = CurrentColor -- Цветная обводка
                     valueLabel.Text = tostring(default or min)
-                    valueLabel.TextColor3 = CurrentColor
+                    valueLabel.TextColor3 = CurrentColor -- Цветной текст
                     valueLabel.TextSize = 12
                     valueLabel.Font = Enum.Font.Code
                     valueLabel.Parent = sliderFrame
@@ -1108,12 +1124,12 @@ function Library:CreateLib(name, theme)
                     sliderBg.Position = UDim2.new(0, 10, 0, 50)
                     sliderBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                     sliderBg.BorderSizePixel = 1
-                    sliderBg.BorderColor3 = CurrentColor
+                    sliderBg.BorderColor3 = CurrentColor -- Цветная обводка
                     sliderBg.Parent = sliderFrame
 
                     local sliderFill = Instance.new("Frame")
                     sliderFill.Size = UDim2.new(0, 0, 1, 0)
-                    sliderFill.BackgroundColor3 = CurrentColor
+                    sliderFill.BackgroundColor3 = CurrentColor -- Цветной индикатор
                     sliderFill.BorderSizePixel = 0
                     sliderFill.Parent = sliderBg
 
@@ -1197,9 +1213,9 @@ function Library:CreateLib(name, theme)
                 local textFrame = Instance.new("Frame")
                 textFrame.Size = UDim2.new(1, 0, 0, height)
                 textFrame.Position = UDim2.new(0, 0, 0, currentY)
-                textFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+                textFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 textFrame.BorderSizePixel = 1
-                textFrame.BorderColor3 = CurrentColor
+                textFrame.BorderColor3 = CurrentColor -- Цветная обводка
                 textFrame.Parent = container
 
                 local textLabel = Instance.new("TextLabel")
@@ -1207,7 +1223,7 @@ function Library:CreateLib(name, theme)
                 textLabel.Position = UDim2.new(0, 10, 0, 10)
                 textLabel.BackgroundTransparency = 1
                 textLabel.Text = text or ""
-                textLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+                textLabel.TextColor3 = CurrentColor -- Цветной текст
                 textLabel.TextSize = 14
                 textLabel.Font = Enum.Font.Code
                 textLabel.TextWrapped = true
@@ -1225,9 +1241,9 @@ function Library:CreateLib(name, theme)
                 local inputFrame = Instance.new("Frame")
                 inputFrame.Size = UDim2.new(1, 0, 0, 85)
                 inputFrame.Position = UDim2.new(0, 0, 0, currentY)
-                inputFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+                inputFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 inputFrame.BorderSizePixel = 1
-                inputFrame.BorderColor3 = CurrentColor
+                inputFrame.BorderColor3 = CurrentColor -- Цветная обводка
                 inputFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -1235,7 +1251,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Position = UDim2.new(0, 10, 0, 8)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = inputName
-                nameLabel.TextColor3 = CurrentColor
+                nameLabel.TextColor3 = CurrentColor -- Цветной текст
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1256,13 +1272,13 @@ function Library:CreateLib(name, theme)
                 local textBox = Instance.new("TextBox")
                 textBox.Size = UDim2.new(1, -20, 0, 30)
                 textBox.Position = UDim2.new(0, 10, 0, 48)
-                textBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 textBox.BorderSizePixel = 1
-                textBox.BorderColor3 = CurrentColor
+                textBox.BorderColor3 = CurrentColor -- Цветная обводка
                 textBox.Text = ""
                 textBox.PlaceholderText = "Enter text..."
                 textBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-                textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+                textBox.TextColor3 = CurrentColor -- Цветной текст
                 textBox.TextSize = 14
                 textBox.Font = Enum.Font.Code
                 textBox.TextXAlignment = Enum.TextXAlignment.Left
@@ -1295,9 +1311,9 @@ function Library:CreateLib(name, theme)
                 local inputToggleFrame = Instance.new("Frame")
                 inputToggleFrame.Size = UDim2.new(1, 0, 0, 85)
                 inputToggleFrame.Position = UDim2.new(0, 0, 0, currentY)
-                inputToggleFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+                inputToggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 inputToggleFrame.BorderSizePixel = 1
-                inputToggleFrame.BorderColor3 = CurrentColor
+                inputToggleFrame.BorderColor3 = CurrentColor -- Цветная обводка
                 inputToggleFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -1305,7 +1321,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Position = UDim2.new(0, 10, 0, 8)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = inputName
-                nameLabel.TextColor3 = CurrentColor
+                nameLabel.TextColor3 = CurrentColor -- Цветной текст
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1327,7 +1343,7 @@ function Library:CreateLib(name, theme)
                 toggleBg.Position = UDim2.new(1, -60, 0, 6)
                 toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 toggleBg.BorderSizePixel = 1
-                toggleBg.BorderColor3 = CurrentColor
+                toggleBg.BorderColor3 = CurrentColor -- Цветная обводка
                 toggleBg.Parent = inputToggleFrame
 
                 local toggleIndicator = Instance.new("Frame")
@@ -1335,19 +1351,19 @@ function Library:CreateLib(name, theme)
                 toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                 toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
                 toggleIndicator.BorderSizePixel = 1
-                toggleIndicator.BorderColor3 = CurrentColor
+                toggleIndicator.BorderColor3 = CurrentColor -- Цветная обводка
                 toggleIndicator.Parent = toggleBg
 
                 local textBox = Instance.new("TextBox")
                 textBox.Size = UDim2.new(1, -20, 0, 30)
                 textBox.Position = UDim2.new(0, 10, 0, 48)
-                textBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 textBox.BorderSizePixel = 1
-                textBox.BorderColor3 = CurrentColor
+                textBox.BorderColor3 = CurrentColor -- Цветная обводка
                 textBox.Text = ""
                 textBox.PlaceholderText = "Enter text..."
                 textBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-                textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+                textBox.TextColor3 = CurrentColor -- Цветной текст
                 textBox.TextSize = 14
                 textBox.Font = Enum.Font.Code
                 textBox.TextXAlignment = Enum.TextXAlignment.Left
@@ -1360,7 +1376,7 @@ function Library:CreateLib(name, theme)
 
                 local function updateToggle()
                     if toggleState then
-                        toggleIndicator.BackgroundColor3 = CurrentColor
+                        toggleIndicator.BackgroundColor3 = CurrentColor -- Цветной индикатор
                         toggleIndicator.Position = UDim2.new(1, -22, 0.5, -8)
                     else
                         toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
@@ -1406,9 +1422,9 @@ function Library:CreateLib(name, theme)
                 local chatFrame = Instance.new("Frame")
                 chatFrame.Size = UDim2.new(1, 0, 0, 300)
                 chatFrame.Position = UDim2.new(0, 0, 0, currentY)
-                chatFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+                chatFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 chatFrame.BorderSizePixel = 1
-                chatFrame.BorderColor3 = CurrentColor
+                chatFrame.BorderColor3 = CurrentColor -- Цветная обводка
                 chatFrame.Parent = container
 
                 local nameLabel = Instance.new("TextLabel")
@@ -1416,7 +1432,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Position = UDim2.new(0, 10, 0, 8)
                 nameLabel.BackgroundTransparency = 1
                 nameLabel.Text = chatName
-                nameLabel.TextColor3 = CurrentColor
+                nameLabel.TextColor3 = CurrentColor -- Цветной текст
                 nameLabel.TextSize = 16
                 nameLabel.Font = Enum.Font.Code
                 nameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1438,10 +1454,10 @@ function Library:CreateLib(name, theme)
                 messagesFrame.Position = UDim2.new(0, 10, 0, 48)
                 messagesFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
                 messagesFrame.BorderSizePixel = 1
-                messagesFrame.BorderColor3 = CurrentColor
+                messagesFrame.BorderColor3 = CurrentColor -- Цветная обводка
                 messagesFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
                 messagesFrame.ScrollBarThickness = 6
-                messagesFrame.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80)
+                messagesFrame.ScrollBarImageColor3 = CurrentColor -- Цветной скроллбар
                 messagesFrame.Parent = chatFrame
 
                 local messagesList = Instance.new("UIListLayout")
@@ -1460,13 +1476,13 @@ function Library:CreateLib(name, theme)
                 local nickBox = Instance.new("TextBox")
                 nickBox.Size = UDim2.new(0.25, -5, 0, 26)
                 nickBox.Position = UDim2.new(0, 10, 0, 225)
-                nickBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                nickBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 nickBox.BorderSizePixel = 1
-                nickBox.BorderColor3 = CurrentColor
+                nickBox.BorderColor3 = CurrentColor -- Цветная обводка
                 nickBox.Text = ""
                 nickBox.PlaceholderText = "Nickname"
                 nickBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-                nickBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+                nickBox.TextColor3 = CurrentColor -- Цветной текст
                 nickBox.TextSize = 14
                 nickBox.Font = Enum.Font.Code
                 nickBox.TextXAlignment = Enum.TextXAlignment.Left
@@ -1476,13 +1492,13 @@ function Library:CreateLib(name, theme)
                 local messageBox = Instance.new("TextBox")
                 messageBox.Size = UDim2.new(0.55, -10, 0, 26)
                 messageBox.Position = UDim2.new(0.25, 15, 0, 225)
-                messageBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                messageBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Черный фон
                 messageBox.BorderSizePixel = 1
-                messageBox.BorderColor3 = CurrentColor
+                messageBox.BorderColor3 = CurrentColor -- Цветная обводка
                 messageBox.Text = ""
                 messageBox.PlaceholderText = "Message"
                 messageBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-                messageBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+                messageBox.TextColor3 = CurrentColor -- Цветной текст
                 messageBox.TextSize = 14
                 messageBox.Font = Enum.Font.Code
                 messageBox.TextXAlignment = Enum.TextXAlignment.Left
@@ -1492,10 +1508,10 @@ function Library:CreateLib(name, theme)
                 local sendButton = Instance.new("TextButton")
                 sendButton.Size = UDim2.new(0.2, -10, 0, 26)
                 sendButton.Position = UDim2.new(0.8, 10, 0, 225)
-                sendButton.BackgroundColor3 = CurrentColor
+                sendButton.BackgroundColor3 = CurrentColor -- Цветной фон для кнопки SEND
                 sendButton.BorderSizePixel = 0
                 sendButton.Text = "SEND"
-                sendButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+                sendButton.TextColor3 = Color3.fromRGB(0, 0, 0) -- Черный текст на цветном фоне
                 sendButton.TextSize = 14
                 sendButton.Font = Enum.Font.Code
                 sendButton.Parent = chatFrame

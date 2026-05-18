@@ -54,6 +54,7 @@ function Library:CreateLib(name, theme)
     local isHidden = false
     local savedSize = Vector2.new(600, 400)
     local savedPos = Vector2.new(0, 0)
+    local minBtnPos = Vector2.new(0, 0)
 
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
@@ -95,13 +96,25 @@ function Library:CreateLib(name, theme)
     minCorner.CornerRadius = UDim.new(0, 6)
     minCorner.Parent = minBtnFrame
     
+    -- Отслеживаем перемещение квадратика
+    minBtnFrame.DragStopped:Connect(function()
+        minBtnPos = Vector2.new(minBtnFrame.AbsolutePosition.X, minBtnFrame.AbsolutePosition.Y)
+    end)
+    
     minBtnFrame.MouseButton1Click:Connect(function()
         if isHidden then return end
         isMinimized = false
         mainFrame.Visible = true
         minBtnFrame.Visible = false
+        -- Показываем меню на месте квадратика
+        local newX = minBtnPos.X - savedSize.X/2 + 20
+        local newY = minBtnPos.Y - savedSize.Y/2 + 20
         mainFrame.Size = UDim2.new(0, savedSize.X, 0, savedSize.Y)
-        mainFrame.Position = UDim2.new(0, savedPos.X, 0, savedPos.Y)
+        mainFrame.Position = UDim2.new(0, math.clamp(newX, 0, workspace.CurrentCamera.ViewportSize.X - savedSize.X), 0, math.clamp(newY, 0, workspace.CurrentCamera.ViewportSize.Y - savedSize.Y))
+    end)
+
+    mainFrame.DragStopped:Connect(function()
+        savedPos = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
     end)
 
     local topBar = Instance.new("Frame")
@@ -376,7 +389,8 @@ function Library:CreateLib(name, theme)
         savedPos = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
         savedSize = Vector2.new(mainFrame.AbsoluteSize.X, mainFrame.AbsoluteSize.Y)
         mainFrame.Visible = false
-        minBtnFrame.Position = UDim2.new(0, savedPos.X + savedSize.X/2 - 20, 0, savedPos.Y + savedSize.Y/2 - 20)
+        minBtnPos = Vector2.new(savedPos.X + savedSize.X/2 - 20, savedPos.Y + savedSize.Y/2 - 20)
+        minBtnFrame.Position = UDim2.new(0, minBtnPos.X, 0, minBtnPos.Y)
         minBtnFrame.Visible = true
     end)
 
@@ -385,7 +399,9 @@ function Library:CreateLib(name, theme)
         savedPos = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
         savedSize = Vector2.new(mainFrame.AbsoluteSize.X, mainFrame.AbsoluteSize.Y)
         mainFrame.Visible = false
-        minBtnFrame.Visible = false
+        minBtnPos = Vector2.new(savedPos.X + savedSize.X/2 - 20, savedPos.Y + savedSize.Y/2 - 20)
+        minBtnFrame.Position = UDim2.new(0, minBtnPos.X, 0, minBtnPos.Y)
+        minBtnFrame.Visible = true
     end)
 
     closeButton.MouseButton1Click:Connect(function()
@@ -398,8 +414,11 @@ function Library:CreateLib(name, theme)
             if isHidden then
                 isHidden = false
                 mainFrame.Visible = true
+                minBtnFrame.Visible = false
+                local newX = minBtnPos.X - savedSize.X/2 + 20
+                local newY = minBtnPos.Y - savedSize.Y/2 + 20
                 mainFrame.Size = UDim2.new(0, savedSize.X, 0, savedSize.Y)
-                mainFrame.Position = UDim2.new(0, savedPos.X, 0, savedPos.Y)
+                mainFrame.Position = UDim2.new(0, math.clamp(newX, 0, workspace.CurrentCamera.ViewportSize.X - savedSize.X), 0, math.clamp(newY, 0, workspace.CurrentCamera.ViewportSize.Y - savedSize.Y))
             end
         end
     end)
@@ -630,7 +649,6 @@ function Library:CreateLib(name, theme)
                     startY = startY + child.Size.Y.Offset + 10
                 end
                 
-                -- Учитываем PlayerListContainer если он есть
                 local playerListContainer = container:FindFirstChild("PlayerListContainer")
                 if playerListContainer then
                     startY = startY + playerListContainer.Size.Y.Offset + 10
@@ -681,7 +699,7 @@ function Library:CreateLib(name, theme)
                             nameLabel.Size = UDim2.new(1, -20, 0, 25)
                             nameLabel.Position = UDim2.new(0, 10, 0, 5)
                             nameLabel.BackgroundTransparency = 1
-                            nameLabel.Text = "" .. player.Name
+                            nameLabel.Text = player.Name -- Убран смайлик
                             nameLabel.TextColor3 = CurrentColor
                             nameLabel.TextSize = 14
                             nameLabel.Font = Enum.Font.Code

@@ -22,6 +22,34 @@ local CurrentColor = Color3.fromRGB(255, 255, 255)
 local CurrentTab = nil
 local TabCounter = 0
 
+local Themes = {
+    ["Black & White"] = {
+        Color = Color3.fromRGB(255, 255, 255),
+        Name = "Black & White"
+    },
+    ["Dark Gray & Black"] = {
+        Color = Color3.fromRGB(100, 100, 100),
+        Name = "Dark Gray & Black"
+    },
+    ["Orange & Black"] = {
+        Color = Color3.fromRGB(255, 140, 0),
+        Name = "Orange & Black"
+    },
+    ["Purple & Black"] = {
+        Color = Color3.fromRGB(180, 0, 255),
+        Name = "Purple & Black"
+    },
+    ["Black & Red"] = {
+        Color = Color3.fromRGB(255, 0, 0),
+        Name = "Black & Red"
+    },
+    ["Neon Red Hacker"] = {
+        Color = Color3.fromRGB(255, 30, 30),
+        Name = "Neon Red Hacker",
+        Special = true
+    }
+}
+
 function Library:CreateLib(name, theme)
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = name
@@ -55,6 +83,7 @@ function Library:CreateLib(name, theme)
     local savedSize = Vector2.new(600, 400)
     local savedPos = Vector2.new(0, 0)
     local minBtnPos = Vector2.new(0, 0)
+    local isNeonHackerTheme = false
 
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
@@ -75,6 +104,15 @@ function Library:CreateLib(name, theme)
     mainStroke.Color = CurrentColor
     mainStroke.Thickness = 1.5
     mainStroke.Parent = mainFrame
+
+    local scanLine = Instance.new("Frame")
+    scanLine.Size = UDim2.new(1, 0, 0, 2)
+    scanLine.Position = UDim2.new(0, 0, 0, 0)
+    scanLine.BackgroundColor3 = Color3.fromRGB(255, 30, 30)
+    scanLine.BackgroundTransparency = 1
+    scanLine.BorderSizePixel = 0
+    scanLine.Parent = mainFrame
+    scanLine.Visible = false
 
     local minBtnFrame = Instance.new("TextButton")
     minBtnFrame.Name = "MinBtn"
@@ -155,7 +193,7 @@ function Library:CreateLib(name, theme)
     titleLabel.Position = UDim2.new(0, 10, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = name
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.TextColor3 = CurrentColor
     titleLabel.TextSize = 14
     titleLabel.Font = Enum.Font.Code
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -226,7 +264,7 @@ function Library:CreateLib(name, theme)
     closeCorner.Parent = closeButton
 
     local settingsFrame = Instance.new("Frame")
-    settingsFrame.Size = UDim2.new(0, 260, 0, 270)
+    settingsFrame.Size = UDim2.new(0, 260, 0, 340)
     settingsFrame.Position = UDim2.new(1, -270, 0, 35)
     settingsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     settingsFrame.BorderSizePixel = 1
@@ -239,6 +277,98 @@ function Library:CreateLib(name, theme)
     sfCorner.CornerRadius = UDim.new(0, 6)
     sfCorner.Parent = settingsFrame
 
+    local settingsTabContainer = Instance.new("Frame")
+    settingsTabContainer.Size = UDim2.new(1, 0, 0, 30)
+    settingsTabContainer.Position = UDim2.new(0, 0, 0, 0)
+    settingsTabContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    settingsTabContainer.BorderSizePixel = 0
+    settingsTabContainer.Parent = settingsFrame
+
+    local settingsTabList = Instance.new("UIListLayout")
+    settingsTabList.FillDirection = Enum.FillDirection.Horizontal
+    settingsTabList.SortOrder = Enum.SortOrder.LayoutOrder
+    settingsTabList.Padding = UDim.new(0, 0)
+    settingsTabList.Parent = settingsTabContainer
+
+    local colorsTabBtn = Instance.new("TextButton")
+    colorsTabBtn.Size = UDim2.new(0.5, 0, 1, 0)
+    colorsTabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    colorsTabBtn.BorderSizePixel = 1
+    colorsTabBtn.BorderColor3 = CurrentColor
+    colorsTabBtn.Text = "Colors"
+    colorsTabBtn.TextColor3 = CurrentColor
+    colorsTabBtn.TextSize = 13
+    colorsTabBtn.Font = Enum.Font.Code
+    colorsTabBtn.Parent = settingsTabContainer
+
+    local otherTabBtn = Instance.new("TextButton")
+    otherTabBtn.Size = UDim2.new(0.5, 0, 1, 0)
+    otherTabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    otherTabBtn.BorderSizePixel = 1
+    otherTabBtn.BorderColor3 = CurrentColor
+    otherTabBtn.Text = "Other"
+    otherTabBtn.TextColor3 = Color3.fromRGB(140, 140, 140)
+    otherTabBtn.TextSize = 13
+    otherTabBtn.Font = Enum.Font.Code
+    otherTabBtn.Parent = settingsTabContainer
+
+    local colorsContent = Instance.new("Frame")
+    colorsContent.Size = UDim2.new(1, 0, 1, -30)
+    colorsContent.Position = UDim2.new(0, 0, 0, 30)
+    colorsContent.BackgroundTransparency = 1
+    colorsContent.Parent = settingsFrame
+    colorsContent.Visible = true
+
+    local otherContent = Instance.new("Frame")
+    otherContent.Size = UDim2.new(1, 0, 1, -30)
+    otherContent.Position = UDim2.new(0, 0, 0, 30)
+    otherContent.BackgroundTransparency = 1
+    otherContent.Parent = settingsFrame
+    otherContent.Visible = false
+
+    colorsTabBtn.MouseButton1Click:Connect(function()
+        colorsContent.Visible = true
+        otherContent.Visible = false
+        colorsTabBtn.TextColor3 = CurrentColor
+        otherTabBtn.TextColor3 = Color3.fromRGB(140, 140, 140)
+    end)
+
+    otherTabBtn.MouseButton1Click:Connect(function()
+        colorsContent.Visible = false
+        otherContent.Visible = true
+        colorsTabBtn.TextColor3 = Color3.fromRGB(140, 140, 140)
+        otherTabBtn.TextColor3 = CurrentColor
+    end)
+
+    local function applyHackerTheme()
+        isNeonHackerTheme = true
+        scanLine.Visible = true
+        scanLine.BackgroundTransparency = 0.7
+        mainStroke.Thickness = 2
+        
+        spawn(function()
+            while isNeonHackerTheme and screenGui.Parent do
+                for i = 0, 1, 0.01 do
+                    if not isNeonHackerTheme then break end
+                    scanLine.Position = UDim2.new(0, 0, i, 0)
+                    task.wait(0.02)
+                end
+                for i = 1, 0, -0.01 do
+                    if not isNeonHackerTheme then break end
+                    scanLine.Position = UDim2.new(0, 0, i, 0)
+                    task.wait(0.02)
+                end
+            end
+        end)
+    end
+
+    local function removeHackerTheme()
+        isNeonHackerTheme = false
+        scanLine.Visible = false
+        scanLine.BackgroundTransparency = 1
+        mainStroke.Thickness = 1.5
+    end
+
     local function updateAllAccentColors()
         if UIElements.ActiveLine then
             UIElements.ActiveLine.BackgroundColor3 = CurrentColor
@@ -246,6 +376,10 @@ function Library:CreateLib(name, theme)
         
         mainStroke.Color = CurrentColor
         topBarStroke.Color = CurrentColor
+        
+        if isNeonHackerTheme then
+            scanLine.BackgroundColor3 = CurrentColor
+        end
         
         for _, obj in pairs(mainFrame:GetDescendants()) do
             if obj:IsA("Frame") and obj.BorderSizePixel > 0 then
@@ -262,7 +396,7 @@ function Library:CreateLib(name, theme)
             if obj:IsA("UIStroke") and obj ~= mainStroke and obj ~= topBarStroke then
                 obj.Color = CurrentColor
             end
-            if obj.Name == "sliderFill" or obj.Name == "toggleIndicator" then
+            if obj.Name == "sliderFill" or obj.Name == "toggleIndicator" or obj.Name == "SliderButton" then
                 obj.BackgroundColor3 = CurrentColor
             end
             if obj:IsA("TextBox") then
@@ -276,9 +410,9 @@ function Library:CreateLib(name, theme)
             end
         end
         
+        titleLabel.TextColor3 = CurrentColor
         minBtnFrame.BorderColor3 = CurrentColor
         minBtnFrame.TextColor3 = CurrentColor
-        titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
         
         for _, tab in pairs(Tabs) do
             if tab.Frame then
@@ -289,26 +423,26 @@ function Library:CreateLib(name, theme)
 
     local colorTitle = Instance.new("TextLabel")
     colorTitle.Size = UDim2.new(1, -20, 0, 25)
-    colorTitle.Position = UDim2.new(0, 10, 0, 10)
+    colorTitle.Position = UDim2.new(0, 10, 0, 5)
     colorTitle.BackgroundTransparency = 1
-    colorTitle.Text = "Menu Color:"
+    colorTitle.Text = "Basic Themes:"
     colorTitle.TextColor3 = CurrentColor
-    colorTitle.TextSize = 14
+    colorTitle.TextSize = 13
     colorTitle.Font = Enum.Font.Code
-    colorTitle.Parent = settingsFrame
+    colorTitle.Parent = colorsContent
 
-    local function createColorButton(text, color, yPos)
+    local function createColorButton(text, color, yPos, parent)
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -20, 0, 32)
+        btn.Size = UDim2.new(1, -20, 0, 28)
         btn.Position = UDim2.new(0, 10, 0, yPos)
         btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         btn.BorderSizePixel = 1
         btn.BorderColor3 = color
         btn.Text = text
         btn.TextColor3 = color
-        btn.TextSize = 14
+        btn.TextSize = 13
         btn.Font = Enum.Font.Code
-        btn.Parent = settingsFrame
+        btn.Parent = parent
 
         local btnCorner = Instance.new("UICorner")
         btnCorner.CornerRadius = UDim.new(0, 4)
@@ -316,16 +450,72 @@ function Library:CreateLib(name, theme)
 
         btn.MouseButton1Click:Connect(function()
             CurrentColor = color
+            if Themes[text] and Themes[text].Special then
+                applyHackerTheme()
+            else
+                removeHackerTheme()
+            end
             updateAllAccentColors()
             settingsFrame.Visible = false
         end)
         return btn
     end
 
-    createColorButton("Black & White", Color3.fromRGB(255, 255, 255), 40)
-    createColorButton("Dark Gray & Black", Color3.fromRGB(100, 100, 100), 77)
-    createColorButton("Orange & Black", Color3.fromRGB(255, 140, 0), 114)
-    createColorButton("Purple & Black", Color3.fromRGB(180, 0, 255), 151)
+    createColorButton("Black & White", Color3.fromRGB(255, 255, 255), 33, colorsContent)
+    createColorButton("Dark Gray & Black", Color3.fromRGB(100, 100, 100), 63, colorsContent)
+    createColorButton("Orange & Black", Color3.fromRGB(255, 140, 0), 93, colorsContent)
+    createColorButton("Purple & Black", Color3.fromRGB(180, 0, 255), 123, colorsContent)
+    createColorButton("Black & Red", Color3.fromRGB(255, 0, 0), 153, colorsContent)
+
+    local otherTitle = Instance.new("TextLabel")
+    otherTitle.Size = UDim2.new(1, -20, 0, 25)
+    otherTitle.Position = UDim2.new(0, 10, 0, 5)
+    otherTitle.BackgroundTransparency = 1
+    otherTitle.Text = "Special Themes:"
+    otherTitle.TextColor3 = CurrentColor
+    otherTitle.TextSize = 13
+    otherTitle.Font = Enum.Font.Code
+    otherTitle.Parent = otherContent
+
+    local hackerBtn = Instance.new("TextButton")
+    hackerBtn.Size = UDim2.new(1, -20, 0, 50)
+    hackerBtn.Position = UDim2.new(0, 10, 0, 35)
+    hackerBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    hackerBtn.BorderSizePixel = 2
+    hackerBtn.BorderColor3 = Color3.fromRGB(255, 30, 30)
+    hackerBtn.Text = "☠ NEON RED HACKER ☠"
+    hackerBtn.TextColor3 = Color3.fromRGB(255, 30, 30)
+    hackerBtn.TextSize = 14
+    hackerBtn.Font = Enum.Font.Code
+    hackerBtn.Parent = otherContent
+
+    local hackerCorner = Instance.new("UICorner")
+    hackerCorner.CornerRadius = UDim.new(0, 4)
+    hackerCorner.Parent = hackerBtn
+
+    local hackerGlow = Instance.new("UIStroke")
+    hackerGlow.Color = Color3.fromRGB(255, 30, 30)
+    hackerGlow.Thickness = 2
+    hackerGlow.Parent = hackerBtn
+
+    hackerBtn.MouseButton1Click:Connect(function()
+        CurrentColor = Color3.fromRGB(255, 30, 30)
+        applyHackerTheme()
+        updateAllAccentColors()
+        settingsFrame.Visible = false
+    end)
+
+    local hackerDesc = Instance.new("TextLabel")
+    hackerDesc.Size = UDim2.new(1, -20, 0, 30)
+    hackerDesc.Position = UDim2.new(0, 10, 0, 90)
+    hackerDesc.BackgroundTransparency = 1
+    hackerDesc.Text = "Features:\n• Scanning line effect\n• Glowing borders\n• Matrix style"
+    hackerDesc.TextColor3 = Color3.fromRGB(255, 30, 30)
+    hackerDesc.TextSize = 11
+    hackerDesc.Font = Enum.Font.Code
+    hackerDesc.TextXAlignment = Enum.TextXAlignment.Left
+    hackerDesc.TextWrapped = true
+    hackerDesc.Parent = otherContent
 
     local transTitle = Instance.new("TextLabel")
     transTitle.Size = UDim2.new(1, -20, 0, 20)
@@ -335,13 +525,13 @@ function Library:CreateLib(name, theme)
     transTitle.TextColor3 = CurrentColor
     transTitle.TextSize = 13
     transTitle.Font = Enum.Font.Code
-    transTitle.Parent = settingsFrame
+    transTitle.Parent = colorsContent
 
     local transBg = Instance.new("Frame")
     transBg.Size = UDim2.new(1, -70, 0, 8)
     transBg.Position = UDim2.new(0, 10, 0, 220)
     transBg.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    transBg.Parent = settingsFrame
+    transBg.Parent = colorsContent
 
     local transBgCorner = Instance.new("UICorner")
     transBgCorner.CornerRadius = UDim.new(0, 4)
@@ -366,7 +556,7 @@ function Library:CreateLib(name, theme)
     transBox.TextColor3 = CurrentColor
     transBox.TextSize = 13
     transBox.Font = Enum.Font.Code
-    transBox.Parent = settingsFrame
+    transBox.Parent = colorsContent
 
     local transBoxCorner = Instance.new("UICorner")
     transBoxCorner.CornerRadius = UDim.new(0, 4)
@@ -431,6 +621,7 @@ function Library:CreateLib(name, theme)
     end)
 
     closeButton.MouseButton1Click:Connect(function()
+        isNeonHackerTheme = false
         screenGui:Destroy()
     end)
 
@@ -1022,6 +1213,7 @@ function Library:CreateLib(name, theme)
                 bgCorner.Parent = sliderBg
 
                 local sliderFill = Instance.new("Frame")
+                sliderFill.Name = "sliderFill"
                 sliderFill.Size = UDim2.new(0, 0, 1, 0)
                 sliderFill.BackgroundColor3 = CurrentColor
                 sliderFill.BorderSizePixel = 0
@@ -1420,6 +1612,7 @@ function Library:CreateLib(name, theme)
                     bgCorner.Parent = sliderBg
 
                     local sliderFill = Instance.new("Frame")
+                    sliderFill.Name = "sliderFill"
                     sliderFill.Size = UDim2.new(0, 0, 1, 0)
                     sliderFill.BackgroundColor3 = CurrentColor
                     sliderFill.BorderSizePixel = 0

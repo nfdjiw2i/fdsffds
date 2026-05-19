@@ -267,6 +267,12 @@ function Library:CreateLib(name, theme)
             end
             if obj:IsA("TextBox") then
                 obj.BorderColor3 = CurrentColor
+                obj.TextColor3 = CurrentColor
+            end
+            if obj:IsA("TextLabel") then
+                if obj.BackgroundTransparency == 1 and obj ~= titleLabel then
+                    obj.TextColor3 = CurrentColor
+                end
             end
         end
         
@@ -987,21 +993,21 @@ function Library:CreateLib(name, theme)
                 descLabel.TextXAlignment = Enum.TextXAlignment.Left
                 descLabel.Parent = sliderFrame
 
-                local valueLabel = Instance.new("TextLabel")
-                valueLabel.Size = UDim2.new(0, 50, 0, 20)
-                valueLabel.Position = UDim2.new(1, -60, 0, 28)
-                valueLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-                valueLabel.BorderSizePixel = 1
-                valueLabel.BorderColor3 = CurrentColor
-                valueLabel.Text = tostring(default or min)
-                valueLabel.TextColor3 = CurrentColor
-                valueLabel.TextSize = 12
-                valueLabel.Font = Enum.Font.Code
-                valueLabel.Parent = sliderFrame
+                local valueBox = Instance.new("TextBox")
+                valueBox.Size = UDim2.new(0, 50, 0, 20)
+                valueBox.Position = UDim2.new(1, -60, 0, 28)
+                valueBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                valueBox.BorderSizePixel = 1
+                valueBox.BorderColor3 = CurrentColor
+                valueBox.Text = tostring(default or min)
+                valueBox.TextColor3 = CurrentColor
+                valueBox.TextSize = 12
+                valueBox.Font = Enum.Font.Code
+                valueBox.Parent = sliderFrame
 
                 local valCorner = Instance.new("UICorner")
                 valCorner.CornerRadius = UDim.new(0, 4)
-                valCorner.Parent = valueLabel
+                valCorner.Parent = valueBox
 
                 local sliderBg = Instance.new("Frame")
                 sliderBg.Size = UDim2.new(1, -80, 0, 10)
@@ -1034,17 +1040,11 @@ function Library:CreateLib(name, theme)
                 local currentValue = default or min
                 local dragging = false
 
-                local function updateSlider(input)
-                    local mousePos = input.Position
-                    local absPos = sliderBg.AbsolutePosition
-                    local absSize = sliderBg.AbsoluteSize.X
-                    local relativeX = math.clamp(mousePos.X - absPos.X, 0, absSize)
-                    local percent = relativeX / absSize
-                    currentValue = math.floor(min + (max - min) * percent)
-                    if currentValue < min then currentValue = min end
-                    if currentValue > max then currentValue = max end
+                local function setSliderValue(value)
+                    currentValue = math.clamp(value, min, max)
+                    local percent = (currentValue - min) / (max - min)
                     sliderFill.Size = UDim2.new(percent, 0, 1, 0)
-                    valueLabel.Text = tostring(currentValue)
+                    valueBox.Text = tostring(currentValue)
                     SliderValues[sliderId] = currentValue
                     if callback then
                         local success, err = pcall(function()
@@ -1055,21 +1055,32 @@ function Library:CreateLib(name, theme)
                     end
                 end
 
+                local function updateSlider(input)
+                    local mousePos = input.Position
+                    local absPos = sliderBg.AbsolutePosition
+                    local absSize = sliderBg.AbsoluteSize.X
+                    local relativeX = math.clamp(mousePos.X - absPos.X, 0, absSize)
+                    local percent = relativeX / absSize
+                    local value = math.floor(min + (max - min) * percent)
+                    setSliderValue(value)
+                end
+
                 if default then
-                    local percent = (default - min) / (max - min)
-                    sliderFill.Size = UDim2.new(percent, 0, 1, 0)
-                    valueLabel.Text = tostring(default)
-                    SliderValues[sliderId] = default
-                    if callback then
-                        pcall(function()
-                            callback(default)
-                        end)
-                    end
+                    setSliderValue(default)
                 end
 
                 sliderButton.MouseButton1Down:Connect(function(input)
                     dragging = true
                     updateSlider(input)
+                end)
+
+                valueBox.FocusLost:Connect(function(enterPressed)
+                    local val = tonumber(valueBox.Text)
+                    if val then
+                        setSliderValue(val)
+                    else
+                        valueBox.Text = tostring(currentValue)
+                    end
                 end)
 
                 UserInputService.InputChanged:Connect(function(input)
@@ -1380,21 +1391,21 @@ function Library:CreateLib(name, theme)
                     descLabel.TextXAlignment = Enum.TextXAlignment.Left
                     descLabel.Parent = sliderFrame
 
-                    local valueLabel = Instance.new("TextLabel")
-                    valueLabel.Size = UDim2.new(0, 50, 0, 20)
-                    valueLabel.Position = UDim2.new(1, -60, 0, 28)
-                    valueLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-                    valueLabel.BorderSizePixel = 1
-                    valueLabel.BorderColor3 = CurrentColor
-                    valueLabel.Text = tostring(default or min)
-                    valueLabel.TextColor3 = CurrentColor
-                    valueLabel.TextSize = 12
-                    valueLabel.Font = Enum.Font.Code
-                    valueLabel.Parent = sliderFrame
+                    local valueBox = Instance.new("TextBox")
+                    valueBox.Size = UDim2.new(0, 50, 0, 20)
+                    valueBox.Position = UDim2.new(1, -60, 0, 28)
+                    valueBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                    valueBox.BorderSizePixel = 1
+                    valueBox.BorderColor3 = CurrentColor
+                    valueBox.Text = tostring(default or min)
+                    valueBox.TextColor3 = CurrentColor
+                    valueBox.TextSize = 12
+                    valueBox.Font = Enum.Font.Code
+                    valueBox.Parent = sliderFrame
 
                     local valCorner = Instance.new("UICorner")
                     valCorner.CornerRadius = UDim.new(0, 4)
-                    valCorner.Parent = valueLabel
+                    valCorner.Parent = valueBox
 
                     local sliderBg = Instance.new("Frame")
                     sliderBg.Size = UDim2.new(1, -80, 0, 10)
@@ -1427,17 +1438,11 @@ function Library:CreateLib(name, theme)
                     local currentValue = default or min
                     local dragging = false
 
-                    local function updateSlider(input)
-                        local mousePos = input.Position
-                        local absPos = sliderBg.AbsolutePosition
-                        local absSize = sliderBg.AbsoluteSize.X
-                        local relativeX = math.clamp(mousePos.X - absPos.X, 0, absSize)
-                        local percent = relativeX / absSize
-                        currentValue = math.floor(min + (max - min) * percent)
-                        if currentValue < min then currentValue = min end
-                        if currentValue > max then currentValue = max end
+                    local function setSliderValue(value)
+                        currentValue = math.clamp(value, min, max)
+                        local percent = (currentValue - min) / (max - min)
                         sliderFill.Size = UDim2.new(percent, 0, 1, 0)
-                        valueLabel.Text = tostring(currentValue)
+                        valueBox.Text = tostring(currentValue)
                         SliderValues[sliderId] = currentValue
                         if callback then
                             local success, err = pcall(function()
@@ -1448,21 +1453,32 @@ function Library:CreateLib(name, theme)
                         end
                     end
 
+                    local function updateSlider(input)
+                        local mousePos = input.Position
+                        local absPos = sliderBg.AbsolutePosition
+                        local absSize = sliderBg.AbsoluteSize.X
+                        local relativeX = math.clamp(mousePos.X - absPos.X, 0, absSize)
+                        local percent = relativeX / absSize
+                        local value = math.floor(min + (max - min) * percent)
+                        setSliderValue(value)
+                    end
+
                     if default then
-                        local percent = (default - min) / (max - min)
-                        sliderFill.Size = UDim2.new(percent, 0, 1, 0)
-                        valueLabel.Text = tostring(default)
-                        SliderValues[sliderId] = default
-                        if callback then
-                            pcall(function()
-                                callback(default)
-                            end)
-                        end
+                        setSliderValue(default)
                     end
 
                     sliderButton.MouseButton1Down:Connect(function(input)
                         dragging = true
                         updateSlider(input)
+                    end)
+
+                    valueBox.FocusLost:Connect(function(enterPressed)
+                        local val = tonumber(valueBox.Text)
+                        if val then
+                            setSliderValue(val)
+                        else
+                            valueBox.Text = tostring(currentValue)
+                        end
                     end)
 
                     UserInputService.InputChanged:Connect(function(input)

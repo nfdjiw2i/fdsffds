@@ -96,17 +96,37 @@ function Library:CreateLib(name, theme)
     minCorner.CornerRadius = UDim.new(0, 6)
     minCorner.Parent = minBtnFrame
     
-    -- Отслеживаем перемещение квадратика
+    local isDragging = false
+    local dragStartPos = nil
+    
+    minBtnFrame.MouseButton1Down:Connect(function()
+        isDragging = false
+        dragStartPos = Vector2.new(minBtnFrame.AbsolutePosition.X, minBtnFrame.AbsolutePosition.Y)
+    end)
+    
+    minBtnFrame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement and dragStartPos then
+            local currentPos = Vector2.new(minBtnFrame.AbsolutePosition.X, minBtnFrame.AbsolutePosition.Y)
+            if (currentPos - dragStartPos).Magnitude > 3 then
+                isDragging = true
+            end
+        end
+    end)
+    
     minBtnFrame.DragStopped:Connect(function()
         minBtnPos = Vector2.new(minBtnFrame.AbsolutePosition.X, minBtnFrame.AbsolutePosition.Y)
+        dragStartPos = nil
     end)
     
     minBtnFrame.MouseButton1Click:Connect(function()
+        if isDragging then
+            isDragging = false
+            return
+        end
         if isHidden then return end
         isMinimized = false
         mainFrame.Visible = true
         minBtnFrame.Visible = false
-        -- Показываем меню на месте квадратика
         local newX = minBtnPos.X - savedSize.X/2 + 20
         local newY = minBtnPos.Y - savedSize.Y/2 + 20
         mainFrame.Size = UDim2.new(0, savedSize.X, 0, savedSize.Y)
@@ -699,7 +719,7 @@ function Library:CreateLib(name, theme)
                             nameLabel.Size = UDim2.new(1, -20, 0, 25)
                             nameLabel.Position = UDim2.new(0, 10, 0, 5)
                             nameLabel.BackgroundTransparency = 1
-                            nameLabel.Text = player.Name -- Убран смайлик
+                            nameLabel.Text = player.Name
                             nameLabel.TextColor3 = CurrentColor
                             nameLabel.TextSize = 14
                             nameLabel.Font = Enum.Font.Code
@@ -819,7 +839,6 @@ function Library:CreateLib(name, theme)
                     if callback then
                         local success, err = pcall(callback)
                         if not success then
-                            warn("Error in button callback: " .. err)
                         end
                     end
                 end)
@@ -917,7 +936,6 @@ function Library:CreateLib(name, theme)
                             callback(toggleState)
                         end)
                         if not success then
-                            warn("Error in toggle callback: " .. err)
                         end
                     end
                 end)
@@ -1033,7 +1051,6 @@ function Library:CreateLib(name, theme)
                             callback(currentValue)
                         end)
                         if not success then
-                            warn("Error in slider callback: " .. err)
                         end
                     end
                 end
@@ -1213,7 +1230,6 @@ function Library:CreateLib(name, theme)
                         if callback then
                             local success, err = pcall(callback)
                             if not success then
-                                warn("Error in dropdown button callback: " .. err)
                             end
                         end
                     end)
@@ -1314,7 +1330,6 @@ function Library:CreateLib(name, theme)
                                 callback(toggleState)
                             end)
                             if not success then
-                                warn("Error in dropdown toggle callback: " .. err)
                             end
                         end
                     end)
@@ -1429,7 +1444,6 @@ function Library:CreateLib(name, theme)
                                 callback(currentValue)
                             end)
                             if not success then
-                                warn("Error in dropdown slider callback: " .. err)
                             end
                         end
                     end
@@ -1575,7 +1589,6 @@ function Library:CreateLib(name, theme)
                             callback(textBox.Text)
                         end)
                         if not success then
-                            warn("Error in text input callback: " .. err)
                         end
                     end
                 end)
@@ -1700,7 +1713,6 @@ function Library:CreateLib(name, theme)
                             callback(textBox, toggleState)
                         end)
                         if not success then
-                            warn("Error in input toggle callback: " .. err)
                         end
                     end
                 end)

@@ -419,8 +419,6 @@ function Library:CreateLib(name, theme)
     local savedPos = Vector2.new(0, 0)
     local isScannerTheme = false
     local hackerLabels = {}
-    local tabScrollPosition = 0
-    local maxTabScroll = 0
 
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
@@ -498,7 +496,7 @@ function Library:CreateLib(name, theme)
     settingsBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     settingsBtn.BorderSizePixel = 1
     settingsBtn.BorderColor3 = CurrentColor
-    settingsBtn.Text = "⚙"
+    settingsBtn.Text = "?"
     settingsBtn.TextColor3 = CurrentColor
     settingsBtn.TextSize = 16
     settingsBtn.Font = Enum.Font.Code
@@ -1051,53 +1049,27 @@ function Library:CreateLib(name, theme)
         end
     end)
 
-    local tabContainerOuter = Instance.new("Frame")
-    tabContainerOuter.Name = "TabContainerOuter"
-    tabContainerOuter.Size = UDim2.new(1, -10, 0, 35)
-    tabContainerOuter.Position = UDim2.new(0, 5, 0, 30)
-    tabContainerOuter.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    tabContainerOuter.BorderSizePixel = 0
-    tabContainerOuter.Parent = mainFrame
-    tabContainerOuter.ZIndex = 10
-    tabContainerOuter.ClipsDescendants = true
-
-    local tabScrollLeft = Instance.new("TextButton")
-    tabScrollLeft.Name = "TabScrollLeft"
-    tabScrollLeft.Size = UDim2.new(0, 16, 1, 0)
-    tabScrollLeft.Position = UDim2.new(0, 0, 0, 30)
-    tabScrollLeft.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    tabScrollLeft.BorderSizePixel = 1
-    tabScrollLeft.BorderColor3 = CurrentColor
-    tabScrollLeft.Text = "<"
-    tabScrollLeft.TextColor3 = CurrentColor
-    tabScrollLeft.TextSize = 12
-    tabScrollLeft.Font = Enum.Font.Code
-    tabScrollLeft.Parent = mainFrame
-    tabScrollLeft.ZIndex = 11
-    tabScrollLeft.Visible = false
-
-    local tabScrollRight = Instance.new("TextButton")
-    tabScrollRight.Name = "TabScrollRight"
-    tabScrollRight.Size = UDim2.new(0, 16, 1, 0)
-    tabScrollRight.Position = UDim2.new(1, -16, 0, 30)
-    tabScrollRight.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    tabScrollRight.BorderSizePixel = 1
-    tabScrollRight.BorderColor3 = CurrentColor
-    tabScrollRight.Text = ">"
-    tabScrollRight.TextColor3 = CurrentColor
-    tabScrollRight.TextSize = 12
-    tabScrollRight.Font = Enum.Font.Code
-    tabScrollRight.Parent = mainFrame
-    tabScrollRight.ZIndex = 11
-    tabScrollRight.Visible = false
+    local tabScrollingFrame = Instance.new("ScrollingFrame")
+    tabScrollingFrame.Name = "TabScrollingFrame"
+    tabScrollingFrame.Size = UDim2.new(1, -10, 0, 35)
+    tabScrollingFrame.Position = UDim2.new(0, 5, 0, 30)
+    tabScrollingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    tabScrollingFrame.BorderSizePixel = 0
+    tabScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    tabScrollingFrame.ScrollBarThickness = 0
+    tabScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.X
+    tabScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.X
+    tabScrollingFrame.Parent = mainFrame
+    tabScrollingFrame.ZIndex = 10
+    tabScrollingFrame.ClipsDescendants = true
 
     local tabContainer = Instance.new("Frame")
     tabContainer.Name = "TabContainer"
-    tabContainer.Size = UDim2.new(1, 0, 1, 0)
+    tabContainer.Size = UDim2.new(0, 0, 1, 0)
     tabContainer.Position = UDim2.new(0, 0, 0, 0)
     tabContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     tabContainer.BorderSizePixel = 0
-    tabContainer.Parent = tabContainerOuter
+    tabContainer.Parent = tabScrollingFrame
     tabContainer.ZIndex = 10
 
     local tabListLayout = Instance.new("UIListLayout")
@@ -1111,55 +1083,16 @@ function Library:CreateLib(name, theme)
     tabPadding.PaddingTop = UDim.new(0, 3)
     tabPadding.Parent = tabContainer
 
-    local function updateTabScroll()
+    local function updateTabCanvas()
         local totalWidth = 0
         for _, btn in ipairs(TabButtons) do
             if btn and btn.Parent then
                 totalWidth = totalWidth + btn.AbsoluteSize.X + 2
             end
         end
-        local visibleWidth = tabContainerOuter.AbsoluteSize.X
-        maxTabScroll = math.max(0, totalWidth - visibleWidth + 6)
-        
-        if maxTabScroll > 0 then
-            tabScrollLeft.Visible = true
-            tabScrollRight.Visible = true
-            tabContainerOuter.Size = UDim2.new(1, -42, 0, 35)
-            tabContainerOuter.Position = UDim2.new(0, 21, 0, 30)
-        else
-            tabScrollLeft.Visible = false
-            tabScrollRight.Visible = false
-            tabContainerOuter.Size = UDim2.new(1, -10, 0, 35)
-            tabContainerOuter.Position = UDim2.new(0, 5, 0, 30)
-            tabContainer.Position = UDim2.new(0, 0, 0, 0)
-            tabScrollPosition = 0
-        end
+        tabContainer.Size = UDim2.new(0, totalWidth + 6, 1, 0)
+        tabScrollingFrame.CanvasSize = UDim2.new(0, totalWidth + 6, 0, 0)
     end
-
-    tabScrollLeft.MouseButton1Click:Connect(function()
-        tabScrollPosition = math.max(0, tabScrollPosition - 100)
-        TweenService:Create(tabContainer, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Position = UDim2.new(0, -tabScrollPosition, 0, 0)}):Play()
-    end)
-
-    tabScrollRight.MouseButton1Click:Connect(function()
-        tabScrollPosition = math.min(maxTabScroll, tabScrollPosition + 100)
-        TweenService:Create(tabContainer, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Position = UDim2.new(0, -tabScrollPosition, 0, 0)}):Play()
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseWheel then
-            local mousePos = UserInputService:GetMouseLocation()
-            local tabOuterPos = tabContainerOuter.AbsolutePosition
-            local tabOuterSize = tabContainerOuter.AbsoluteSize
-            if mousePos.X >= tabOuterPos.X and mousePos.X <= tabOuterPos.X + tabOuterSize.X and
-               mousePos.Y >= tabOuterPos.Y and mousePos.Y <= tabOuterPos.Y + tabOuterSize.Y then
-                if maxTabScroll > 0 then
-                    tabScrollPosition = math.clamp(tabScrollPosition - input.Position.Z * 30, 0, maxTabScroll)
-                    TweenService:Create(tabContainer, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {Position = UDim2.new(0, -tabScrollPosition, 0, 0)}):Play()
-                end
-            end
-        end
-    end)
 
     local ColumnsFrame = Instance.new("Frame")
     ColumnsFrame.Name = "ColumnsFrame"
@@ -1178,7 +1111,7 @@ function Library:CreateLib(name, theme)
                     btn.Size = UDim2.new(0, textSize.X + 24, 1, -6)
                 end
             end
-            updateTabScroll()
+            updateTabCanvas()
         end
     end
 
@@ -1298,7 +1231,8 @@ function Library:CreateLib(name, theme)
             sectionTitle.BackgroundTransparency = 1
             sectionTitle.Text = "// " .. sectionName
             sectionTitle.TextColor3 = CurrentColor
-            sectionTitle.TextSize = 16            sectionTitle.Font = Enum.Font.Code
+            sectionTitle.TextSize = 16
+            sectionTitle.Font = Enum.Font.Code
             sectionTitle.TextXAlignment = Enum.TextXAlignment.Left
             sectionTitle.Parent = container
 

